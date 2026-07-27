@@ -6,6 +6,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import me.hkaibni.dto.ApiResponse;
 import me.hkaibni.dto.OTPDTO;
+import me.hkaibni.dto.UserDTO;
 import me.hkaibni.model.OTP;
 import me.hkaibni.model.User;
 import me.hkaibni.security.GFG;
@@ -30,12 +31,14 @@ public class OTPController {
     @Inject
     OTPService otpServ;
     
-    @Path("/{SSN}")
-    @GET
-    public Response obtainOTP(@PathParam("SSN") String SSN) throws Exception {
+    @Path("/request")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response obtainOTP(UserDTO dto) throws Exception {
 
-        User user = userServ.getUser(SSN);
-
+//        User user = userServ.getUser(dto.getSSN());
+        User user = userServ.getUser(dto.getId());
         otpState result = otpServ.createOTP(
                 user,
                 "REGISTRATION",
@@ -48,7 +51,7 @@ public class OTPController {
                             new ApiResponse(
                                     404,
                                     "User not found",
-                                    null,
+                                    user,
                                     new Date(System.currentTimeMillis())
                             )
                     )
@@ -95,12 +98,12 @@ public class OTPController {
                 .build();
     }
 
-    @Path("/{SSN}")
+    @Path("/verify")
     @POST
     @Consumes (MediaType.APPLICATION_JSON)
     @Produces (MediaType.APPLICATION_JSON)
-    public Response verify(OTPDTO dto, @PathParam("SSN") String SSN) throws Exception {
-        User user = userServ.getUser(SSN);
+    public Response verify(OTPDTO dto) throws Exception {
+        User user = userServ.getUser(dto.getSSN());
 
         OTP otp = otpServ.getOTP(user);
         if (otpServ.checkOTP(otp.getHashedOtp(),dto.getOtpcode())){

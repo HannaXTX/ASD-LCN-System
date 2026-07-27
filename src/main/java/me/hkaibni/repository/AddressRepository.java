@@ -1,10 +1,16 @@
 package me.hkaibni.repository;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
+import me.hkaibni.dto.AddressSearchDTO;
+import me.hkaibni.dto.UserSearchDTO;
 import me.hkaibni.model.Address;
+import me.hkaibni.model.User;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @ApplicationScoped
 public class AddressRepository implements PanacheRepository<Address> {
@@ -23,7 +29,7 @@ public class AddressRepository implements PanacheRepository<Address> {
         return delete("id", id);
     }
 
-    public List<Address> globalSearch(String value) {
+    public List<Address> search(String value) {
         String search = "%" + value.toLowerCase() + "%";
 
         return list(
@@ -32,6 +38,42 @@ public class AddressRepository implements PanacheRepository<Address> {
                         "OR LOWER(village) LIKE ?1",
                 search
         );
+    }
+
+
+    public List<Address> search(AddressSearchDTO request) {
+
+        StringBuilder query = new StringBuilder("1 = 1");
+        Map<String, Object> params = new HashMap<>();
+
+        if (request.getGovernorate() != null && !request.getGovernorate().isBlank()) {
+            query.append(" and LOWER(governorate) like :governorate");
+            params.put(
+                    "ssn",
+                    "%" + request.getGovernorate().trim().toLowerCase() + "%"
+            );
+        }
+
+        if (request.getVillage() != null && !request.getVillage().isBlank()) {
+
+            query.append(" and LOWER(village) like :firstName");
+            params.put(
+                    "firstName",
+                    "%" + request.getVillage().trim().toLowerCase() + "%"
+            );
+        }
+
+        int page = request.getPage() == null
+                ? 0
+                : Math.max(request.getPage(), 0);
+
+        int pageSize = request.getPageSize() == null
+                ? 20
+                : Math.min(Math.max(request.getPageSize(), 1), 100);
+
+        return find(query.toString(), params)
+                .page(Page.of(page, pageSize))
+                .list();
     }
 
 }

@@ -3,8 +3,11 @@ package me.hkaibni.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import me.hkaibni.dto.AddressSearchDTO;
 import me.hkaibni.dto.CreateAddressDTO;
+import me.hkaibni.dto.UserSearchDTO;
 import me.hkaibni.model.Address;
+import me.hkaibni.model.User;
 import me.hkaibni.repository.AddressRepository;
 import me.hkaibni.repository.UserRepository;
 
@@ -68,6 +71,14 @@ public class AddressService {
         address.setLongitude(dto.getLongitude());
 
         return 0;
+    }
+
+    public List<Address> searchAddresses(AddressSearchDTO request) {
+        return addressRepository.search(request);
+    }
+
+    public List<Address> searchAddresses(String request) {
+        return addressRepository.search(request);
     }
 
     @Transactional

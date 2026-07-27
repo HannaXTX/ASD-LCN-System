@@ -16,8 +16,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import static io.quarkus.hibernate.orm.panache.PanacheEntityBase.count;
-
 @ApplicationScoped
 public class OTPService {
 
@@ -62,7 +60,7 @@ public class OTPService {
     @Transactional
     public boolean verifyUser(User user,OTP otp){
         otp.setVerified(true);
-        userService.getUser(user.getSSN()).setVerified(1);
+        userService.getUser(user.getSSN()).getAccount().setVerified(1);
         return true;
     }
     @Transactional
@@ -90,9 +88,6 @@ public class OTPService {
         }
         return 0;
     }
-
-
-
 
     @Transactional
     public boolean deleteOTP(UUID id) {

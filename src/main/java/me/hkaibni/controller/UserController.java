@@ -10,12 +10,15 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import me.hkaibni.dto.ApiResponse;
 import me.hkaibni.dto.UserDTO;
+import me.hkaibni.dto.UserSearchDTO;
 import me.hkaibni.model.User;
 import me.hkaibni.repository.UserRepository;
 import me.hkaibni.service.UserService;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Path("/users")
 
@@ -23,6 +26,7 @@ import java.util.Date;
 public class UserController {
     @Inject
     UserService userServ;
+
 
     @Inject
     JsonWebToken jwt;
@@ -86,14 +90,15 @@ public class UserController {
                         "User deleted successfully",
                         null,new Date(System.currentTimeMillis())
                 )
-        ).build();    }
-    @Path("/{SSN}")
+        ).build();
+    }
+    @Path("/{id}")
     @PUT
     @RolesAllowed("USER")
     @Consumes (MediaType.APPLICATION_JSON)
     @Produces (MediaType.APPLICATION_JSON)
-    public Response updateUser(UserDTO user,@PathParam("SSN") String SSN) throws Exception {
-        int operation = userServ.updateUser(SSN,user);
+    public Response updateUser(UserDTO user,@PathParam("id") UUID id) throws Exception {
+        int operation = userServ.updateUser(id,user);
         if (operation==0)
             return Response.ok(
                     new ApiResponse(
@@ -123,18 +128,55 @@ public class UserController {
         }
     }
 
-    @Path("/{SSN}/approve")
+    @Path("/register")
+    @POST
+    @Consumes (MediaType.APPLICATION_JSON)
+    public Response createUser(UserDTO user) throws Exception {
+        if (userServ.getUser(user.getSSN())!=null)
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(
+                            new ApiResponse(
+                                    409,
+                                    "SSN already exists!",
+                                    user.getSSN(),new Date(System.currentTimeMillis())
+                            )
+                    )
+                    .build();
+        if (userServ.createUser(user))
+            return Response.status(Response.Status.CREATED)
+                    .entity(
+                            new ApiResponse(
+                                    201,
+                                    "Registration Successful, User created, Please enter OTP",
+                                    userServ.getUser(user.getSSN()),new Date(System.currentTimeMillis())
+                            )
+                    )
+                    .build();
+        return Response.status(Response.Status.CONFLICT)
+                .entity(
+                        new ApiResponse(
+                                409,
+                                "SSN already exists!",
+                                user.getSSN(),new Date(System.currentTimeMillis())
+                        )
+                )
+                .build();
+    }
+
+
+    @Path("/approve")
     @POST
     @RolesAllowed("ADMIN")
     @Produces (MediaType.APPLICATION_JSON)
-    public Response approve(@PathParam("SSN") String SSN) throws Exception {
-        int operation = userServ.approve(SSN);
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response approve(UserDTO dto) throws Exception {
+        int operation = userServ.approve(dto.getId());
         if (operation==0)
             return Response.ok(
                     new ApiResponse(
                             200,
                             "User approved successfully",
-                            SSN,new Date(System.currentTimeMillis()),jwt.getRawToken()
+                            dto.getId(),new Date(System.currentTimeMillis()),jwt.getRawToken()
                     )
             ).build();
         else if (operation==1){
@@ -148,6 +190,31 @@ public class UserController {
 
         }
         return null;
+    }
+
+
+    @GET
+    @Path("/search")
+    @RolesAllowed("ADMIN")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchUsers(UserSearchDTO dto) {
+        List<User> results;
+        if (dto.hasNoCriteria()) {
+            results = userServ.searchUsers(dto.getValue());
+        }
+        else {
+            results = userServ.searchUsers(dto);
+        }
+        return Response.ok(
+                new ApiResponse(
+                        200,
+                        results.isEmpty()
+                                ? "No users found"
+                                : "User search completed successfully",
+                        results,
+                        new Date()
+                )
+        ).build();
     }
 
 

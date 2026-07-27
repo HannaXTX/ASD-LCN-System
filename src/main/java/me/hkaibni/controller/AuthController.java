@@ -1,4 +1,5 @@
 package me.hkaibni.controller;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -12,7 +13,7 @@ import me.hkaibni.service.UserService;
 
 import java.util.Date;
 
-@Path("/auth")
+@Path("/login")
 public class AuthController {
 
     public enum STATE {SUCCESS,INVALID_CRED, PENDING_APR,PENDING_VER}
@@ -23,35 +24,11 @@ public class AuthController {
     @Inject
     AuthService authServ;
 
-    @Path("/register")
+
+
+
     @POST
-    @Consumes (MediaType.APPLICATION_JSON)
-    public Response createUser(UserDTO user) throws Exception {
-
-        if (userServ.createUser(user))
-            return Response.status(Response.Status.CREATED)
-                    .entity(
-                            new ApiResponse(
-                                    201,
-                                    "Registration Successful, User created, Please enter OTP",
-                                    user,new Date(System.currentTimeMillis())
-                            )
-                    )
-                    .build();
-        return Response.status(Response.Status.CONFLICT)
-                .entity(
-                        new ApiResponse(
-                                409,
-                                "SSN already exists!",
-                                user.getSSN(),new Date(System.currentTimeMillis())
-                        )
-                )
-                .build();
-    }
-
-
-    @Path("/login")
-    @POST
+    @PermitAll
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(LoginDTO loginDTO) throws Exception {
@@ -104,7 +81,7 @@ public class AuthController {
                         "Login successful",
                         user,
                         new Date(System.currentTimeMillis()),
-                        user.getToken()
+                        user.getAccount().getToken()
                 )
         ).build();
     }
