@@ -11,6 +11,7 @@ import me.hkaibni.security.AESUtil;
 import me.hkaibni.security.PBKDF2;
 import java.sql.Date;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 
 @ApplicationScoped
@@ -30,25 +31,22 @@ public class AuthService {
             return AuthController.STATE.INVALID_CRED;
         }
 
-        if (user.getApproved()==0){
+        if (user.getAccount().getApproved()==0){
             return AuthController.STATE.PENDING_VER;
         }
 
-        if (user.getVerified()==0){
+        if (user.getAccount().getVerified()==0){
             return AuthController.STATE.PENDING_APR;
         }
 
-        if (PBKDF2.validatePassword(AESUtil.decrypt(dto.getPassword()), user.getSalt(), user.getPassword())) {
-            String perm = String.valueOf(user.getUserType().getPrivilege()).equals(usertype.ADMIN.toString())
-                    ? "ADMIN"
-                    : "USER";
-            user.setLastLogged(new Date(System.currentTimeMillis()));
+        if (PBKDF2.validatePassword(AESUtil.decrypt(dto.getPassword()), user.getAccount().getSalt(), user.getAccount().getPassword())) {
+            user.getAccount().setLastLoggedAt(LocalDateTime.now());
             String token = Jwt.issuer("hkaibni.me")
                     .subject(user.getId().toString())
-                    .groups(perm)
+                    .groups(user.getAccount().getUserType().getPrivilege())
                     .expiresAt(Instant.now().plusSeconds(3600))
                     .sign();
-            user.setToken(token);
+            user.getAccount().setToken(token);
 
             return AuthController.STATE.SUCCESS;
         }

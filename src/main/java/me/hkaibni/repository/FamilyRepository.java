@@ -46,7 +46,7 @@ public class FamilyRepository
         ).list();
     }
 
-    public List<Family> globalSearch(String value) {
+    public List<Family> search(String value) {
         String search = "%" + value.toLowerCase() + "%";
 
         return list(

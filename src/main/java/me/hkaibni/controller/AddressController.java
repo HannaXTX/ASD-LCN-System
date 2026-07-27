@@ -6,13 +6,17 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import me.hkaibni.dto.AddressSearchDTO;
 import me.hkaibni.dto.ApiResponse;
 import me.hkaibni.dto.CreateAddressDTO;
+import me.hkaibni.dto.UserSearchDTO;
 import me.hkaibni.model.Address;
+import me.hkaibni.model.User;
 import me.hkaibni.service.AddressService;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.util.Date;
+import java.util.List;
 
 @Path("/address")
 
@@ -120,6 +124,31 @@ public class AddressController {
                     ))
                     .build();
         }
+    }
+
+
+    @GET
+    @Path("/search")
+    @RolesAllowed("ADMIN")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchUsers(AddressSearchDTO dto) {
+        List<Address> results;
+        if (dto.hasNoCriteria()) {
+            results = addressServ.searchAddresses(dto.getValue());
+        }
+        else {
+            results = addressServ.searchAddresses(dto);
+        }
+        return Response.ok(
+                new ApiResponse(
+                        200,
+                        results.isEmpty()
+                                ? "No Addresses found"
+                                : "User search completed successfully",
+                        results,
+                        new Date()
+                )
+        ).build();
     }
 
 

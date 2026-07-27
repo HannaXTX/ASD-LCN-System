@@ -1,6 +1,8 @@
 package me.hkaibni.model;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
@@ -13,47 +15,36 @@ public class User {
     @Id
     @GeneratedValue
     private UUID id;
-
     private String SSN;
-    @OneToOne
-    @JoinColumn(name = "user_type_id")
-    private UserType userType;
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     private String firstName;
     private String lastName;
-    private int approved;
-    private int verified;
-
-    private String password;
     private String email;
     @ManyToOne
     @JoinColumn(name = "address_id")
     private Address address;
     private String phone;
-    private Date created;
-    private Date modified;
-    private Date lastLogged;
-    private byte[] salt;
-    private boolean isActive;
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
+    @OneToOne(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            optional = false
+    )
+    private Account account;
 
-    public boolean isActive() { return isActive; }
-
-    public void setActive(boolean active) { isActive = active; }
-
-    public int getVerified() {
-        return verified;
+    public Account getAccount(){
+        return account;
     }
 
-    public void setVerified(int verified) {
-        this.verified = verified;
-    }
+    public void setAccount(Account account) {
+        this.account = account;
 
-    public int getApproved() {
-        return approved;
     }
+;
+    public User() {
 
-    public void setApproved(int approved) {
-        this.approved = approved;
     }
 
     public String getSSN() {
@@ -64,13 +55,6 @@ public class User {
         this.SSN = SSN;
     }
 
-    public Date getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
 
     public String getFirstName() {
         return firstName;
@@ -88,51 +72,28 @@ public class User {
         this.lastName = lastName;
     }
 
-
-    @Column(columnDefinition = "TEXT")
-    private String token;
-
-    public UserType getUserType() {
-        return userType;
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setUserType(UserType userType) {
-        this.userType = userType;
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
-
-    public String getToken() {
-        return token;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public Date getLastLogged() {
-        return lastLogged;
+    public LocalDateTime getModifiedAt() {
+        return modifiedAt;
     }
 
-    public void setLastLogged(Date lastLogged) {
-        this.lastLogged = lastLogged;
-    }
-
-
-    public void setSalt(byte[] salt) {
-        this.salt = salt;
-    }
-
-
-    public byte[] getSalt() {
-        return salt;
-    }
-
-    public Date getModified() {
-        return modified;
-    }
-
-    public void setModified(Date modified) {
-        this.modified = modified;
+    public void setModifiedAt(LocalDateTime modifiedAt) {
+        this.modifiedAt = modifiedAt;
     }
 
     public String getEmail() {
@@ -159,21 +120,9 @@ public class User {
         this.phone = phone;
     }
 
-    public Date getCreated() {
-        return created;
-    }
 
-    public void setCreated(Date created) {
-        this.created = created;
-    }
 
-    public String getPassword() {
-        return password;
-    }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public UUID getId() {
         return id;
@@ -183,31 +132,7 @@ public class User {
         this.id = id;
     }
 
-    public User() {
 
-    }
 
-    @Override
-    public String toString() {
-        return "User{\n" +
-                "  id=" + id + ",\n" +
-                "  SSN='" + SSN + "',\n" +
-                "  userType=" + userType + ",\n" +
-                "  dateOfBirth=" + dateOfBirth + ",\n" +
-                "  firstName='" + firstName + "',\n" +
-                "  lastName='" + lastName + "',\n" +
-                "  approved=" + approved + ",\n" +
-                "  verified=" + verified + ",\n" +
-                "  password='" + password + "',\n" +
-                "  email='" + email + "',\n" +
-                "  address=" + address + ",\n" +
-                "  phone='" + phone + "',\n" +
-                "  created=" + created + ",\n" +
-                "  modified=" + modified + ",\n" +
-                "  lastLogged=" + lastLogged + ",\n" +
-                "  salt=" + Arrays.toString(salt) + ",\n" +
-                "  isActive=" + isActive + ",\n" +
-                "  token='" + token + "'\n" +
-                "}";
-    }
+
 }
