@@ -12,34 +12,29 @@ public class Account {
     @Id
     @GeneratedValue
     private UUID id;
-    @OneToOne(optional = false)
-    @JoinColumn(
-            name = "user_id",
-            nullable = false,
-            unique = true
-    )
-    @JsonIgnore
-    private User user;
-    @ManyToOne
-    @JoinColumn(name = "user_type_id")
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_type_id", nullable = false)
     private UserType userType;
 
-    private int approved;
-    private int verified;
+    @Column(nullable = false)
     private String password;
 
+    @Column(columnDefinition = "TEXT")
+    private String token;
+
     private LocalDateTime lastLoggedAt;
-    private byte[] salt;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-
-    @Column(columnDefinition = "TEXT")
-
-
-    private String token;
+    private byte[] salt;
     private boolean isActive;
+
+    private int approved;
+    private int verified;
+
+
+
 
     public String getToken() {
         return token;
@@ -65,13 +60,6 @@ public class Account {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     public UserType getUserType() {
         return userType;

@@ -3,14 +3,12 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.UUID;
 
 
 @Entity
-@Table (name = "USERS")
-public class User {
+@Table (name = "UserPanel")
+public class UserPanel {
 
     @Id
     @GeneratedValue
@@ -50,8 +48,10 @@ public class User {
 
     public void setAccount(Account account) {
         this.account = account;
+
     }
-    public User() {
+;
+    public UserPanel() {
 
     }
 

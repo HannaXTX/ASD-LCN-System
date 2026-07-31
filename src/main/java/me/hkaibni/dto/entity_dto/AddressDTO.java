@@ -1,11 +1,20 @@
-package me.hkaibni.dto;
+package me.hkaibni.dto.entity_dto;
 
 public class AddressDTO {
 
+    private String code;
     private String governorate;
     private String village;
     private Double latitude;
     private Double longitude;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public String getGovernorate() {
         return governorate;
@@ -14,6 +23,7 @@ public class AddressDTO {
     public void setGovernorate(String governorate) {
         this.governorate = governorate;
     }
+
 
     public String getVillage() {
         return village;
@@ -38,4 +48,6 @@ public class AddressDTO {
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
+
+
 }

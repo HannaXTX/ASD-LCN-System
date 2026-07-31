@@ -1,7 +1,8 @@
-package me.hkaibni.dto;
+package me.hkaibni.dto.search;
 
-public class AddressSearchDTO extends SearchDTO{
+public class AddressSearchDTO extends SearchDTO {
 
+    private String code;
     private String governorate;
     private String village;
     private Double latitude;
@@ -9,10 +10,18 @@ public class AddressSearchDTO extends SearchDTO{
 
 
     public boolean hasNoCriteria() {
-        return isBlank(governorate)
+        return isBlank(governorate) && isBlank(code)
                 && isBlank(village)
                 && isBlank(latitude)
                 && isBlank(longitude);
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     private boolean isBlank(String value) {

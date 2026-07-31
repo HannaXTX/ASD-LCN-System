@@ -5,9 +5,6 @@ import jakarta.persistence.*;
 @Entity
 public class UserType {
 
-
-    public static enum privilegeType {ADMIN,BASIC}
-
     @Id
     private int id;
     String privilege;

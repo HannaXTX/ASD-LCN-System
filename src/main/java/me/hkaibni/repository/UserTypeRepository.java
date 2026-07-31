@@ -11,6 +11,4 @@ public class UserTypeRepository implements PanacheRepository<UserType> {
         return find("privilege", privilege).firstResult();
     }
 
-
-
 }

@@ -2,7 +2,7 @@ package me.hkaibni.repository;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
-import me.hkaibni.model.Family;
+import me.hkaibni.model.familyTree.Family;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,13 +11,18 @@ import java.util.UUID;
 public class FamilyRepository
         implements PanacheRepositoryBase<Family, UUID> {
 
-    public Family findBySSN(String ssn) {
-        return find("SSN", ssn).firstResult();
+    public Family findById(UUID id) {
+        return find("id", id).firstResult();
     }
 
-    public Family findByName(String familyName) {
-        return find("familyName", familyName).firstResult();
+    public Family findByNameAr(String familyName) {
+        return find("name_ar", familyName).firstResult();
     }
+
+    public Family findByNameEn(String familyName) {
+        return find("name_en", familyName).firstResult();
+    }
+
 
     public void save(Family family) {
         persist(family);
@@ -27,12 +32,9 @@ public class FamilyRepository
         return listAll();
     }
 
-    public boolean deleteByFamilyId(UUID id) {
-        return deleteById(id);
-    }
 
-    public long deleteBySSN(String ssn) {
-        return delete("SSN", ssn);
+    public long deleteFamilyById(UUID id) {
+        return delete("id", id);
     }
 
     public Family findFamilyById(UUID id) {
@@ -41,7 +43,7 @@ public class FamilyRepository
 
     public List<Family> searchByName(String familyName) {
         return find(
-                "LOWER(familyName) LIKE ?1",
+                "LOWER(name_en) LIKE ?1",
                 "%" + familyName.toLowerCase().trim() + "%"
         ).list();
     }
@@ -50,7 +52,7 @@ public class FamilyRepository
         String search = "%" + value.toLowerCase() + "%";
 
         return list(
-                "LOWER(familyName) LIKE ?1 OR LOWER(SSN) LIKE ?1",
+                "LOWER(name_ar) LIKE ?1 OR LOWER(name_en) LIKE ?1",
                 search
         );
     }

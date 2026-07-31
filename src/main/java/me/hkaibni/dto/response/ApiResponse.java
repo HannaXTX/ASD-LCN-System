@@ -1,13 +1,13 @@
-package me.hkaibni.dto;
+package me.hkaibni.dto.response;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class ApiResponse {
 
     private int status;
     private String message;
     private Object data;
-    private Date timestamp;
+    private LocalDateTime timestamp;
     private String token;
 
     public String getToken() {
@@ -18,14 +18,14 @@ public class ApiResponse {
         this.token = token;
     }
 
-    public ApiResponse(int status, String message, Object data,Date timestamp) {
+    public ApiResponse(int status, String message, Object data,LocalDateTime timestamp) {
         this.status = status;
         this.message = message;
         this.data = data;
         this.timestamp = timestamp;
     }
 
-    public ApiResponse(int status, String message, Object data,Date timestamp,String token) {
+    public ApiResponse(int status, String message, Object data,LocalDateTime timestamp,String token) {
 
         this.status = status;
         this.message = message;
@@ -35,11 +35,11 @@ public class ApiResponse {
     }
 
 
-    public Date getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 

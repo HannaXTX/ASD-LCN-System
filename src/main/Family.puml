@@ -1,0 +1,198 @@
+@startuml GenealogyCore
+
+title Core Genealogy Relationship Model
+
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+hide empty methods
+
+
+package "Existing Domain" {
+
+    class User <<existing>> {
+        - id: UUID
+        - SSN: String
+        - firstName: String
+        - lastName: String
+    }
+
+    class Family <<existing>> {
+        - id: UUID
+        - familyName: String
+        - familyNameAR: String
+    }
+}
+
+
+package "Genealogy Core" {
+
+    class FamilyTree {
+        - id: UUID
+    }
+
+    class Person {
+        - id: UUID
+        - firstName: String
+        - middleName: String
+        - lastName: String
+        - firstNameAR: String
+        - middleNameAR: String
+        - lastNameAR: String
+        - dateOfBirth: LocalDate
+        - dateOfDeath: LocalDate
+        - gender: Gender
+    }
+
+    class FamilyTreeMember {
+        - id: UUID
+    }
+
+    class ParentChildRelationship {
+        - id: UUID
+        - parentType: ParentType
+    }
+
+    class PartnerRelationship {
+        - id: UUID
+        - partnerType: PartnerType
+    }
+
+    enum Gender {
+        MALE
+        FEMALE
+    }
+
+    enum ParentType {
+        BIOLOGICAL
+        ADOPTIVE
+        STEP
+        FOSTER
+    }
+
+    enum PartnerType {
+        SPOUSE
+        PARTNER
+    }
+}
+
+
+' =====================================================
+' Family and tree
+' =====================================================
+
+Family "1" -- "1" FamilyTree : genealogy
+
+
+' =====================================================
+' Person and account
+' =====================================================
+
+User "0..1" -- "0..1" Person : linked account
+
+
+' =====================================================
+' Tree membership
+' =====================================================
+
+FamilyTree "1" *-- "0..*" FamilyTreeMember : contains
+
+Person "1" <-- "0..*" FamilyTreeMember : represents
+
+
+' =====================================================
+' Parent-child relationships
+' =====================================================
+
+FamilyTree "1" *-- "0..*" ParentChildRelationship
+
+ParentChildRelationship "0..*" --> "1" FamilyTreeMember : parent
+
+ParentChildRelationship "0..*" --> "1" FamilyTreeMember : child
+
+
+' =====================================================
+' Partner relationships
+' =====================================================
+
+FamilyTree "1" *-- "0..*" PartnerRelationship
+
+PartnerRelationship "0..*" --> "1" FamilyTreeMember : memberA
+
+PartnerRelationship "0..*" --> "1" FamilyTreeMember : memberB
+
+
+' =====================================================
+' Enum relationships
+' =====================================================
+
+Person --> Gender
+
+ParentChildRelationship --> ParentType
+
+PartnerRelationship --> PartnerType
+
+
+' =====================================================
+' Constraints
+' =====================================================
+
+note right of Person
+A Person represents a real human.
+
+A Person may:
+- be linked to a registered User
+- exist without a User account
+- appear in multiple family trees
+end note
+
+
+note bottom of FamilyTreeMember
+Unique constraint:
+
+(family_tree_id, person_id)
+
+The same Person cannot appear twice
+inside the same FamilyTree.
+end note
+
+
+note bottom of ParentChildRelationship
+Direction:
+
+parent -> child
+
+Rules:
+
+1. parent != child
+2. Both members belong to the same tree
+3. Duplicate edge is forbidden
+4. Adding the edge must not create a cycle
+5. The parent-child graph is a DAG
+end note
+
+
+note bottom of PartnerRelationship
+Partner relationships are symmetric.
+
+memberA -> memberB means the same as
+memberB -> memberA.
+
+Store members in a consistent order
+to prevent reversed duplicates.
+end note
+
+
+note right of ParentType
+Do not store derived relationships:
+
+- sibling
+- grandparent
+- grandchild
+- uncle
+- aunt
+- cousin
+
+Calculate them from parent-child edges.
+end note
+
+@enduml

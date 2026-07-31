@@ -7,28 +7,21 @@ import me.hkaibni.dto.entity_dto.UserDTO;
 import me.hkaibni.dto.search.UserSearchDTO;
 import me.hkaibni.model.Account;
 import me.hkaibni.model.Address;
-import me.hkaibni.model.User;
-import me.hkaibni.repository.AccountRepository;
-import me.hkaibni.repository.AddressRepository;
-import me.hkaibni.repository.UserRepository;
-import me.hkaibni.repository.UserTypeRepository;
+import me.hkaibni.model.UserPanel;
+import me.hkaibni.repository.*;
 import me.hkaibni.security.AESUtil;
 import me.hkaibni.security.PBKDF2;
 import me.hkaibni.service.results.UpdateStatus;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.sql.Update;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static io.quarkus.hibernate.orm.panache.PanacheEntityBase.count;
-
 @ApplicationScoped
-public class UserService {
+public class UserPanelService {
 
     @Inject
-    UserRepository userRepository;
+    UserPanelRepository userPanelRepository;
     @Inject
     AddressRepository addressRepository;
     @Inject
@@ -42,7 +35,7 @@ public class UserService {
     @Transactional
     public boolean createUser(UserDTO dto) throws Exception {
 
-        if (userRepository.findBySSN(dto.getSSN()) != null) {
+        if (userPanelRepository.findBySSN(dto.getSSN()) != null) {
             return false;
         }
 
@@ -51,7 +44,7 @@ public class UserService {
         String decryptedPassword = AESUtil.decrypt(dto.getPassword());
         LocalDateTime now = LocalDateTime.now();
 
-        User user = new User();
+        UserPanel user = new UserPanel();
 
 
 
@@ -70,14 +63,14 @@ public class UserService {
         account.setSalt(salt);
         account.setCreatedAt(now);
         account.setModifiedAt(now);
-        account.setVerified(0);
-        account.setApproved(0);
+        account.setVerified(1);
+        account.setApproved(1);
 
-        account.setUserType(userTypeRepository.findByPrivilege("BASIC"));
+        account.setUserType(userTypeRepository.findByPrivilege("ADMIN"));
 
         user.setAccount(account);
 
-        userRepository.save(user);
+        userPanelRepository.save(user);
         accountRepository.save(account);
 
 
@@ -85,30 +78,33 @@ public class UserService {
     }
 
 
-    public User getUser(String SSN) {
-        return userRepository.findBySSN(SSN);
+    public UserPanel getUserPanel(String SSN) {
+        return userPanelRepository.findBySSN(SSN);
     }
-    public User getUser(UUID uuid) {
-        return userRepository.findById(uuid);
+    public UserPanel getUserPanel(UUID uuid) {
+        return userPanelRepository.findById(uuid);
     }
 
 
-    public List<User> getAllUsers(){
-        return userRepository.ListUsers();
+    public List<UserPanel> getAllUserPanels(){
+        return userPanelRepository.ListUserPanels();
     }
 
     @Transactional
-    public UpdateStatus updateUser(UUID id, UserDTO dto) throws Exception {
+    public UpdateStatus updateUserPanel(UUID id, UserDTO dto) throws Exception {
 
         LocalDateTime now = LocalDateTime.now();
 
 
-        User user = userRepository.findById(id);
+        UserPanel user = userPanelRepository.findById(id);
 
         if (user == null) {
             return UpdateStatus.NOT_FOUND;
         }
-        if (userRepository.findBySSN(dto.getSSN()) != null) {
+//        if (userRepository.findBySSN(dto.getSSN()) != null && !SSN.equals(dto.getSSN())) {
+//            return 2;
+//        }
+        if (userPanelRepository.findBySSN(dto.getSSN()) != null) {
             return UpdateStatus.ALREADY_EXISTS;
         }
         user.setSSN(dto.getSSN());
@@ -125,28 +121,27 @@ public class UserService {
         }
 
         user.setModifiedAt(now);
-
         return UpdateStatus.SUCCESS;
     }
 
     @Transactional
-    public boolean deleteUser(String SSN) {
-        return userRepository.deleteBySSN(SSN) > 0;
+    public boolean deleteUserPanel(String SSN) {
+        return userPanelRepository.deleteBySSN(SSN) > 0;
     }
 
     @Transactional
     public int approve(UUID uuid) {
-        getUser(uuid).getAccount().setApproved(1);
+        getUserPanel(uuid).getAccount().setApproved(1);
         return 0;
     }
 
 
-    public List<User> searchUsers(UserSearchDTO request) {
-        return userRepository.search(request);
+    public List<UserPanel> searchUserPanels(UserSearchDTO request) {
+        return userPanelRepository.search(request);
     }
 
-    public List<User> searchUsers(String request, int page,int pageSize) {
-        return userRepository.search(request,page,pageSize);
+    public List<UserPanel> searchUserPanels(String request,int page,int pageSize) {
+        return userPanelRepository.search(request,page,pageSize);
     }
 
     //    @Transactional
