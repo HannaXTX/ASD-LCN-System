@@ -3,11 +3,9 @@ package me.hkaibni.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import me.hkaibni.dto.AddressSearchDTO;
-import me.hkaibni.dto.CreateAddressDTO;
-import me.hkaibni.dto.UserSearchDTO;
+import me.hkaibni.dto.search.AddressSearchDTO;
+import me.hkaibni.dto.entity_dto.AddressDTO;
 import me.hkaibni.model.Address;
-import me.hkaibni.model.User;
 import me.hkaibni.repository.AddressRepository;
 import me.hkaibni.repository.UserRepository;
 
@@ -24,16 +22,16 @@ public class AddressService {
 
 
     @Transactional
-    public boolean createAddress(CreateAddressDTO dto) throws Exception {
+    public boolean createAddress(AddressDTO dto) throws Exception {
 
-        if (addressRepository.findById(dto.getId()) != null) {
+        if (addressRepository.findByCode(dto.getCode()) != null) {
             return false;
         }
 
 
         Address address = new Address();
 
-        address.setId(dto.getId());
+        address.setCode(dto.getCode());
         address.setGovernorate(dto.getGovernorate());
         address.setVillage(dto.getVillage());
         address.setLatitude(dto.getLatitude());
@@ -53,18 +51,18 @@ public class AddressService {
     }
 
     @Transactional
-    public int updateAddress(String id, CreateAddressDTO dto) throws Exception {
+    public int updateAddress(String id, AddressDTO dto) throws Exception {
 
         Address address = addressRepository.findById(id);
 
         if (address == null) {
             return 1;
         }
-        if (addressRepository.findById(id) != null && !id.equals(dto.getId())) {
+        if (addressRepository.findById(id) != null && !id.equals(dto.getCode())) {
             return 2;
         }
 
-        address.setId(dto.getId());
+        address.setCode(dto.getCode());
         address.setGovernorate(dto.getGovernorate());
         address.setVillage(dto.getVillage());
         address.setLatitude(dto.getLatitude());

@@ -1,4 +1,4 @@
-package me.hkaibni.dto;
+package me.hkaibni.dto.search;
 
 public abstract class SearchDTO {
 

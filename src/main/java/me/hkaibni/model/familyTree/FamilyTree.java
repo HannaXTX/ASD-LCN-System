@@ -1,4 +1,4 @@
-package me.hkaibni.model;
+package me.hkaibni.model.familyTree;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,13 +7,12 @@ import jakarta.persistence.Id;
 import java.util.UUID;
 
 @Entity
-public class Family {
-
+public class FamilyTree {
     @Id
     @GeneratedValue
     private UUID id;
-    private String SSN;
     private String familyName;
+
 
     public UUID getId() {
         return id;
@@ -21,14 +20,6 @@ public class Family {
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public String getSSN() {
-        return SSN;
-    }
-
-    public void setSSN(String SSN) {
-        this.SSN = SSN;
     }
 
     public String getFamilyName() {

@@ -4,7 +4,7 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import me.hkaibni.dto.search.UserSearchDTO;
-import me.hkaibni.model.User;
+import me.hkaibni.model.UserPanel;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,26 +12,27 @@ import java.util.Map;
 import java.util.UUID;
 
 @ApplicationScoped
-public class UserRepository implements PanacheRepository<User> {
+public class UserPanelRepository implements PanacheRepository<UserPanel> {
 
-    public User findBySSN(String SSN) {
+    public UserPanel findBySSN(String SSN) {
         return find("SSN", SSN).firstResult();
     }
-    public User findById(UUID id) {
+    public UserPanel findById(UUID id) {
         return find("id", id).firstResult();
     }
 
-    public void save(User user) {
+    public void save(UserPanel user) {
         persist(user);
     }
-    public List<User> ListUsers(){
+    public List<UserPanel> ListUserPanels(){
         return this.listAll();
     }
     public long deleteBySSN(String SSN) {
         return delete("SSN", SSN);
     }
 
-    public List<User> search(String value, Integer page, Integer pageSize) {
+
+    public List<UserPanel> search(String value, Integer page, Integer pageSize) {
 
         StringBuilder query = new StringBuilder("1 = 1");
         Map<String, Object> params = new HashMap<>();
@@ -71,7 +72,7 @@ public class UserRepository implements PanacheRepository<User> {
                 .list();
     }
 
-    public List<User> search(UserSearchDTO request) {
+    public List<UserPanel> search(UserSearchDTO request) {
 
         StringBuilder query = new StringBuilder("1 = 1");
         Map<String, Object> params = new HashMap<>();
@@ -152,7 +153,6 @@ public class UserRepository implements PanacheRepository<User> {
                 .page(Page.of(page - 1, pageSize))
                 .list();
     }
-
 
 
 }

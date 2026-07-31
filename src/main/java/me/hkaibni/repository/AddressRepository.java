@@ -3,10 +3,8 @@ package me.hkaibni.repository;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
-import me.hkaibni.dto.AddressSearchDTO;
-import me.hkaibni.dto.UserSearchDTO;
+import me.hkaibni.dto.search.AddressSearchDTO;
 import me.hkaibni.model.Address;
-import me.hkaibni.model.User;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +15,10 @@ public class AddressRepository implements PanacheRepository<Address> {
 
     public Address findById(String id) {
         return find("id", id).firstResult();
+    }
+
+    public Address findByCode(String code) {
+        return find("code", code).firstResult();
     }
 
     public void save(Address address) {
@@ -33,8 +35,8 @@ public class AddressRepository implements PanacheRepository<Address> {
         String search = "%" + value.toLowerCase() + "%";
 
         return list(
-                "LOWER(id) LIKE ?1 " +
-                        "OR LOWER(governorate) LIKE ?1 " +
+                "LOWER(id) LIKE ?1 " + "LOWER(code) LIKE ?1 " +
+                "OR LOWER(governorate) LIKE ?1 " +
                         "OR LOWER(village) LIKE ?1",
                 search
         );
@@ -46,19 +48,27 @@ public class AddressRepository implements PanacheRepository<Address> {
         StringBuilder query = new StringBuilder("1 = 1");
         Map<String, Object> params = new HashMap<>();
 
+        if (request.getCode() != null && !request.getCode().isBlank()) {
+            query.append(" and LOWER(code) like :code");
+            params.put(
+                    "code",
+                    "%" + request.getGovernorate().trim().toLowerCase() + "%"
+            );
+        }
+
         if (request.getGovernorate() != null && !request.getGovernorate().isBlank()) {
             query.append(" and LOWER(governorate) like :governorate");
             params.put(
-                    "ssn",
+                    "governorate",
                     "%" + request.getGovernorate().trim().toLowerCase() + "%"
             );
         }
 
         if (request.getVillage() != null && !request.getVillage().isBlank()) {
 
-            query.append(" and LOWER(village) like :firstName");
+            query.append(" and LOWER(village) like :village");
             params.put(
-                    "firstName",
+                    "village",
                     "%" + request.getVillage().trim().toLowerCase() + "%"
             );
         }

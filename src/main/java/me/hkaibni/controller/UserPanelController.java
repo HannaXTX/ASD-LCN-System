@@ -8,8 +8,8 @@ import jakarta.ws.rs.core.Response;
 import me.hkaibni.dto.response.ApiResponse;
 import me.hkaibni.dto.entity_dto.UserDTO;
 import me.hkaibni.dto.search.UserSearchDTO;
-import me.hkaibni.model.User;
-import me.hkaibni.service.UserService;
+import me.hkaibni.model.UserPanel;
+import me.hkaibni.service.UserPanelService;
 import me.hkaibni.service.results.UpdateStatus;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
@@ -17,12 +17,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@Path("/users")
+@Path("/panel")
 
 
-public class UserController {
+public class UserPanelController {
     @Inject
-    UserService userServ;
+    UserPanelService userServ;
 
 
     @Inject
@@ -38,12 +38,12 @@ public class UserController {
     @GET
     @RolesAllowed("ADMIN")
     @Produces (MediaType.APPLICATION_JSON)
-    public Response getUsers(){
+    public Response getPanelUsers(){
         return Response.ok(
                 new ApiResponse(
                         200,
                         "Users retrieved successfully",
-                        userServ.getAllUsers(), LocalDateTime.now()
+                        userServ.getAllUserPanels(), LocalDateTime.now()
                 )
         ).build();
     }
@@ -54,12 +54,12 @@ public class UserController {
     @Produces (MediaType.APPLICATION_JSON)
     public Response getUser(@PathParam("SSN") String SSN){
 
-        User user = userServ.getUser(SSN);
+        UserPanel user = userServ.getUserPanel(SSN);
 
         return Response.ok(
                 new ApiResponse(
                         200,
-                        "User retrieved successfully",
+                        "UserPanel retrieved successfully",
                         user,LocalDateTime.now()
                 )
         ).build();
@@ -70,12 +70,12 @@ public class UserController {
     @Produces (MediaType.APPLICATION_JSON)
     public Response deleteUser(@PathParam("SSN") String SSN){
 
-        if (!userServ.deleteUser(SSN)) {
+        if (!userServ.deleteUserPanel(SSN)) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(
                             new ApiResponse(
                                     404,
-                                    "User not found",
+                                    "UserPanel not found",
                                     null,LocalDateTime.now()
                             )
                     )
@@ -84,7 +84,7 @@ public class UserController {
         return Response.ok(
                 new ApiResponse(
                         200,
-                        "User deleted successfully",
+                        "UserPanel deleted successfully",
                         null,LocalDateTime.now()
                 )
         ).build();
@@ -95,12 +95,12 @@ public class UserController {
     @Consumes (MediaType.APPLICATION_JSON)
     @Produces (MediaType.APPLICATION_JSON)
     public Response updateUser(UserDTO user,@PathParam("id") UUID id) throws Exception {
-        UpdateStatus operation = userServ.updateUser(id,user);
+        UpdateStatus operation = userServ.updateUserPanel(id,user);
         if (operation==UpdateStatus.SUCCESS)
             return Response.ok(
                     new ApiResponse(
                             200,
-                            "User updated successfully",
+                            "UserPanel updated successfully",
                             user,LocalDateTime.now()
                     )
             ).build();
@@ -127,15 +127,17 @@ public class UserController {
 
     @Path("/register")
     @POST
-    @Consumes (MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response createUser(UserDTO user) throws Exception {
-        if (userServ.getUser(user.getSSN())!=null)
+
+        if (userServ.getUserPanel(user.getSSN()) != null)
             return Response.status(Response.Status.CONFLICT)
                     .entity(
                             new ApiResponse(
                                     409,
                                     "SSN already exists!",
-                                    user.getSSN(),LocalDateTime.now()
+                                    user.getSSN(), LocalDateTime.now()
                             )
                     )
                     .build();
@@ -144,8 +146,8 @@ public class UserController {
                     .entity(
                             new ApiResponse(
                                     201,
-                                    "Registration Successful, User created, Please enter OTP",
-                                    userServ.getUser(user.getSSN()),LocalDateTime.now()
+                                    "Registration Successful, UserPanel created, Please enter OTP",
+                                    userServ.getUserPanel(user.getSSN()), LocalDateTime.now()
                             )
                     )
                     .build();
@@ -154,7 +156,7 @@ public class UserController {
                         new ApiResponse(
                                 409,
                                 "SSN already exists!",
-                                user.getSSN(),LocalDateTime.now()
+                                user.getSSN(), LocalDateTime.now()
                         )
                 )
                 .build();
@@ -172,7 +174,7 @@ public class UserController {
             return Response.ok(
                     new ApiResponse(
                             200,
-                            "User approved successfully",
+                            "UserPanel approved successfully",
                             dto.getId(),LocalDateTime.now(),jwt.getRawToken()
                     )
             ).build();
@@ -195,19 +197,19 @@ public class UserController {
     @RolesAllowed("ADMIN")
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchUsers(UserSearchDTO dto) {
-        List<User> results;
+        List<UserPanel> results;
         if (dto.hasNoCriteria()) {
-            results = userServ.searchUsers(dto.getValue(),dto.getPage(),dto.getPageSize());
+            results = userServ.searchUserPanels(dto.getValue(),dto.getPage(),dto.getPageSize());
         }
         else {
-            results = userServ.searchUsers(dto);
+            results = userServ.searchUserPanels(dto);
         }
         return Response.ok(
                 new ApiResponse(
                         200,
                         results.isEmpty()
                                 ? "No users found"
-                                : "User search completed successfully",
+                                : "UserPanel search completed successfully",
                         results,
                         LocalDateTime.now()
                 )

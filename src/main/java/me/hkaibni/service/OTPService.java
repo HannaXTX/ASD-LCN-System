@@ -11,6 +11,7 @@ import me.hkaibni.model.User;
 import me.hkaibni.repository.OTPRepository;
 import me.hkaibni.repository.UserRepository;
 import me.hkaibni.security.TimeSec;
+import me.hkaibni.service.results.OtpStatus;
 
 import java.util.Date;
 import java.util.List;
@@ -28,14 +29,14 @@ public class OTPService {
 
 
     @Transactional
-    public OTPController.otpState createOTP(User user, String purpose, String OTP_CODE) throws Exception {
+    public OtpStatus createOTP(User user, String purpose, String OTP_CODE) throws Exception {
 
         int attempts = (int) OTPRepository.countOtpsAfter(user, TimeSec.getDailyResetTime())+1;
 
         if (user==null)
-            return OTPController.otpState.NULL;
+            return OtpStatus.NULL;
         if (attempts > 6)
-            return OTPController.otpState.OUT_OF_ATTEMPTS;
+            return OtpStatus.OUT_OF_ATTEMPTS;
 
         OTP otp = new OTP();
         otp.setUser(user);
@@ -47,7 +48,7 @@ public class OTPService {
 
         OTPRepository.save(otp);
 
-        return OTPController.otpState.SUCCESS;
+        return OtpStatus.SUCCESS;
     }
     @Transactional
     public OTP getOTP(User user) {

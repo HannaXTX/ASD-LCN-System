@@ -6,16 +6,14 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import me.hkaibni.dto.AddressSearchDTO;
-import me.hkaibni.dto.ApiResponse;
-import me.hkaibni.dto.CreateAddressDTO;
-import me.hkaibni.dto.UserSearchDTO;
+import me.hkaibni.dto.search.AddressSearchDTO;
+import me.hkaibni.dto.response.ApiResponse;
+import me.hkaibni.dto.entity_dto.AddressDTO;
 import me.hkaibni.model.Address;
-import me.hkaibni.model.User;
 import me.hkaibni.service.AddressService;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Path("/address")
@@ -44,7 +42,7 @@ public class AddressController {
                 new ApiResponse(
                         200,
                         "Users retrieved successfully",
-                        addressServ.getAllAddresses(),new Date(System.currentTimeMillis())
+                        addressServ.getAllAddresses(), LocalDateTime.now()
                 )
         ).build();
     }
@@ -61,7 +59,7 @@ public class AddressController {
                 new ApiResponse(
                         200,
                         "Address retrieved successfully",
-                        address,new Date(System.currentTimeMillis())
+                        address,LocalDateTime.now()
                 )
         ).build();
     }
@@ -78,7 +76,7 @@ public class AddressController {
                             new ApiResponse(
                                     404,
                                     "Address not found",
-                                    null,new Date(System.currentTimeMillis())
+                                    null,LocalDateTime.now()
                             )
                     )
                     .build();        }
@@ -87,7 +85,7 @@ public class AddressController {
                 new ApiResponse(
                         200,
                         "Address deleted successfully",
-                        null,new Date(System.currentTimeMillis())
+                        null,LocalDateTime.now()
                 )
         ).build();    }
     @Path("/{id}")
@@ -95,14 +93,14 @@ public class AddressController {
     @RolesAllowed("USER")
     @Consumes (MediaType.APPLICATION_JSON)
     @Produces (MediaType.APPLICATION_JSON)
-    public Response updateAddress(CreateAddressDTO dto, @PathParam("id") String id) throws Exception {
+    public Response updateAddress(AddressDTO dto, @PathParam("id") String id) throws Exception {
         int operation = addressServ.updateAddress(id,dto);
         if (operation==0)
             return Response.ok(
                     new ApiResponse(
                             200,
                             "Address updated successfully",
-                            dto,new Date(System.currentTimeMillis())
+                            dto,LocalDateTime.now()
                     )
             ).build();
         else if (operation==1){
@@ -110,7 +108,7 @@ public class AddressController {
                     .entity(new ApiResponse(
                             404,
                             "Address not found",
-                            null,new Date(System.currentTimeMillis())
+                            null,LocalDateTime.now()
                     ))
                     .build();
 
@@ -120,7 +118,7 @@ public class AddressController {
                     .entity(new ApiResponse(
                             409,
                             "Name Already exists",
-                            null,new Date(System.currentTimeMillis())
+                            null,LocalDateTime.now()
                     ))
                     .build();
         }
@@ -146,7 +144,7 @@ public class AddressController {
                                 ? "No Addresses found"
                                 : "User search completed successfully",
                         results,
-                        new Date()
+                        LocalDateTime.now()
                 )
         ).build();
     }

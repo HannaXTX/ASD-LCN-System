@@ -4,25 +4,21 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import me.hkaibni.dto.ApiResponse;
-import me.hkaibni.dto.OTPDTO;
-import me.hkaibni.dto.UserDTO;
+import me.hkaibni.dto.response.ApiResponse;
+import me.hkaibni.dto.entity_dto.OTPDTO;
+import me.hkaibni.dto.entity_dto.UserDTO;
 import me.hkaibni.model.OTP;
 import me.hkaibni.model.User;
 import me.hkaibni.security.GFG;
 import me.hkaibni.service.AuthService;
 import me.hkaibni.service.OTPService;
 import me.hkaibni.service.UserService;
+import me.hkaibni.service.results.OtpStatus;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Path("/otp")
 public class OTPController {
-
-    public enum STATE {SUCCESS,INVALID_CRED,PENDING_OTP,PENDING_VER}
-
-    public enum otpState {SUCCESS,NULL,OUT_OF_ATTEMPTS}
-
 
     @Inject
     UserService userServ;
@@ -39,39 +35,39 @@ public class OTPController {
 
 //        User user = userServ.getUser(dto.getSSN());
         User user = userServ.getUser(dto.getId());
-        otpState result = otpServ.createOTP(
+        OtpStatus result = otpServ.createOTP(
                 user,
                 "REGISTRATION",
                 GFG.getOTP_CODE()
         );
 
-        if (result == otpState.NULL) {
+        if (result == OtpStatus.NULL) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(
                             new ApiResponse(
                                     404,
                                     "User not found",
                                     user,
-                                    new Date(System.currentTimeMillis())
+                                    LocalDateTime.now()
                             )
                     )
                     .build();
         }
 
-        if (result == otpState.OUT_OF_ATTEMPTS) {
+        if (result == OtpStatus.OUT_OF_ATTEMPTS) {
             return Response.status(Response.Status.TOO_MANY_REQUESTS)
                     .entity(
                             new ApiResponse(
                                     429,
                                     "OTP attempts exceeded",
                                     null,
-                                    new Date(System.currentTimeMillis())
+                                    LocalDateTime.now()
                             )
                     )
                     .build();
         }
 
-        if (result == otpState.SUCCESS) {
+        if (result == OtpStatus.SUCCESS) {
             OTP otp = otpServ.getOTP(user);
 
             return Response.status(Response.Status.OK)
@@ -80,7 +76,7 @@ public class OTPController {
                                     200,
                                     "OTP returned successfully",
                                     otp.getHashedOtp(),
-                                    new Date(System.currentTimeMillis())
+                                    LocalDateTime.now()
                             )
                     )
                     .build();
@@ -92,7 +88,7 @@ public class OTPController {
                                 500,
                                 "Unknown OTP state",
                                 null,
-                                new Date(System.currentTimeMillis())
+                                LocalDateTime.now()
                         )
                 )
                 .build();
@@ -113,7 +109,7 @@ public class OTPController {
                             new ApiResponse(
                                     200,
                                     "Account Verified",
-                                    otp.getPurpose(),new Date(System.currentTimeMillis())
+                                    otp.getPurpose(),LocalDateTime.now()
                             )
                     )
                     .build();
@@ -125,7 +121,7 @@ public class OTPController {
                         new ApiResponse(
                                 406,
                                 "WRONG OTP",
-                                otp.getHashedOtp(),new Date(System.currentTimeMillis())
+                                otp.getHashedOtp(),LocalDateTime.now()
                         )
                 )
                 .build();

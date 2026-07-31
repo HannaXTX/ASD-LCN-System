@@ -5,23 +5,34 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
 import java.math.BigDecimal;
+import java.util.UUID;
+
 @Entity
 public class Address {
 
     @Id
     @GeneratedValue
-    private String id; //PXXX
+    private UUID id;
+    private String code; //PXXX
     private String governorate;
     private String village;
     private Double latitude;
     private Double longitude;
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getGovernorate() {

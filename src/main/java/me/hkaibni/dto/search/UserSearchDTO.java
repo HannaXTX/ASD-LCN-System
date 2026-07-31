@@ -1,43 +1,25 @@
-package me.hkaibni.dto;
+package me.hkaibni.dto.search;
 
-import me.hkaibni.model.User;
+public class UserSearchDTO extends SearchDTO {
 
-import java.util.UUID;
-
-public class UserDTO {
-
-
-    private UUID id;
-    private String password;
     private String SSN;
     private String firstName;
     private String lastName;
     private String email;
-    private String addressId;
     private String phone;
+    private String addressId;
 
-    public UUID getId() {
-        return id;
+
+    public boolean hasNoCriteria() {
+        return isBlank(firstName)
+                && isBlank(lastName)
+                && isBlank(email)
+                && isBlank(phone)
+                && isBlank(addressId);
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getSSN() {
-        return SSN;
-    }
-
-    public void setSSN(String SSN) {
-        this.SSN = SSN;
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 
     public String getFirstName() {
@@ -64,6 +46,14 @@ public class UserDTO {
         this.email = email;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     public String getAddressId() {
         return addressId;
     }
@@ -72,11 +62,13 @@ public class UserDTO {
         this.addressId = addressId;
     }
 
-    public String getPhone() {
-        return phone;
+
+
+    public String getSSN() {
+        return SSN;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setSSN(String SSN) {
+        this.SSN = SSN;
     }
 }
