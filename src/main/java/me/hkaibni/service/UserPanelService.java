@@ -5,9 +5,9 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import me.hkaibni.dto.entity_dto.UserDTO;
 import me.hkaibni.dto.search.UserSearchDTO;
-import me.hkaibni.model.Account;
+import me.hkaibni.model.userdata.Account;
 import me.hkaibni.model.Address;
-import me.hkaibni.model.UserPanel;
+import me.hkaibni.model.userdata.UserPanel;
 import me.hkaibni.repository.*;
 import me.hkaibni.security.AESUtil;
 import me.hkaibni.security.PBKDF2;
@@ -35,7 +35,7 @@ public class UserPanelService {
     @Transactional
     public boolean createUser(UserDTO dto) throws Exception {
 
-        if (userPanelRepository.findBySSN(dto.getSSN()) != null) {
+        if (userPanelRepository.findBySsn(dto.getSsn()) != null) {
             return false;
         }
 
@@ -48,7 +48,7 @@ public class UserPanelService {
 
 
 
-        user.setSSN(dto.getSSN());
+        user.setSsn(dto.getSsn());
         Address address = addressRepository.findById(dto.getAddressId());
         user.setAddress(address);
         user.setPhone(dto.getPhone());
@@ -79,7 +79,7 @@ public class UserPanelService {
 
 
     public UserPanel getUserPanel(String SSN) {
-        return userPanelRepository.findBySSN(SSN);
+        return userPanelRepository.findBySsn(SSN);
     }
     public UserPanel getUserPanel(UUID uuid) {
         return userPanelRepository.findById(uuid);
@@ -104,10 +104,10 @@ public class UserPanelService {
 //        if (userRepository.findBySSN(dto.getSSN()) != null && !SSN.equals(dto.getSSN())) {
 //            return 2;
 //        }
-        if (userPanelRepository.findBySSN(dto.getSSN()) != null) {
+        if (userPanelRepository.findBySsn(dto.getSsn()) != null) {
             return UpdateStatus.ALREADY_EXISTS;
         }
-        user.setSSN(dto.getSSN());
+        user.setSsn(dto.getSsn());
         Address address = addressRepository.findById(dto.getAddressId());
         user.setAddress(address);
         user.setPhone(dto.getPhone());
@@ -126,7 +126,7 @@ public class UserPanelService {
 
     @Transactional
     public boolean deleteUserPanel(String SSN) {
-        return userPanelRepository.deleteBySSN(SSN) > 0;
+        return userPanelRepository.deleteBySsn(SSN) > 0;
     }
 
     @Transactional

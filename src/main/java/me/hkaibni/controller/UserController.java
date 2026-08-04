@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.Response;
 import me.hkaibni.dto.response.ApiResponse;
 import me.hkaibni.dto.entity_dto.UserDTO;
 import me.hkaibni.dto.search.UserSearchDTO;
-import me.hkaibni.model.User;
+import me.hkaibni.model.userdata.User;
 import me.hkaibni.service.UserService;
 import me.hkaibni.service.results.UpdateStatus;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -129,13 +129,13 @@ public class UserController {
     @POST
     @Consumes (MediaType.APPLICATION_JSON)
     public Response createUser(UserDTO user) throws Exception {
-        if (userServ.getUser(user.getSSN())!=null)
+        if (userServ.getUser(user.getSsn())!=null)
             return Response.status(Response.Status.CONFLICT)
                     .entity(
                             new ApiResponse(
                                     409,
                                     "SSN already exists!",
-                                    user.getSSN(),LocalDateTime.now()
+                                    user.getSsn(),LocalDateTime.now()
                             )
                     )
                     .build();
@@ -145,7 +145,7 @@ public class UserController {
                             new ApiResponse(
                                     201,
                                     "Registration Successful, User created, Please enter OTP",
-                                    userServ.getUser(user.getSSN()),LocalDateTime.now()
+                                    userServ.getUser(user.getSsn()),LocalDateTime.now()
                             )
                     )
                     .build();
@@ -154,7 +154,7 @@ public class UserController {
                         new ApiResponse(
                                 409,
                                 "SSN already exists!",
-                                user.getSSN(),LocalDateTime.now()
+                                user.getSsn(),LocalDateTime.now()
                         )
                 )
                 .build();

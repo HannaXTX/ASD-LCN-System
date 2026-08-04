@@ -3,9 +3,8 @@ package me.hkaibni.repository;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import me.hkaibni.model.OTP;
-import me.hkaibni.model.User;
+import me.hkaibni.model.userdata.User;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +15,7 @@ import static io.quarkus.hibernate.orm.panache.PanacheEntityBase.count;
 public class OTPRepository implements PanacheRepository<OTP> {
 
     public OTP findByUser(User us) {
-        return find("user.SSN", us.getSSN()).firstResult();
+        return find("user.ssn", us.getSsn()).firstResult();
     }
 
     public OTP findById(UUID id) {

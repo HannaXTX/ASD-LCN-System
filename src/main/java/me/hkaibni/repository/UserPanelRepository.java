@@ -4,7 +4,7 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import me.hkaibni.dto.search.UserSearchDTO;
-import me.hkaibni.model.UserPanel;
+import me.hkaibni.model.userdata.UserPanel;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +14,8 @@ import java.util.UUID;
 @ApplicationScoped
 public class UserPanelRepository implements PanacheRepository<UserPanel> {
 
-    public UserPanel findBySSN(String SSN) {
-        return find("SSN", SSN).firstResult();
+    public UserPanel findBySsn(String ssn) {
+        return find("ssn", ssn).firstResult();
     }
     public UserPanel findById(UUID id) {
         return find("id", id).firstResult();
@@ -27,8 +27,8 @@ public class UserPanelRepository implements PanacheRepository<UserPanel> {
     public List<UserPanel> ListUserPanels(){
         return this.listAll();
     }
-    public long deleteBySSN(String SSN) {
-        return delete("SSN", SSN);
+    public long deleteBySsn(String ssn) {
+        return delete("ssn", ssn);
     }
 
 
@@ -45,7 +45,7 @@ public class UserPanelRepository implements PanacheRepository<UserPanel> {
                     lower(firstName) like :search
                     or lower(lastName) like :search
                     or lower(email) like :search
-                    or lower(SSN) like :search
+                    or lower(ssn) like :search
                     or lower(phone) like :search
                 )
                 """);
@@ -77,11 +77,11 @@ public class UserPanelRepository implements PanacheRepository<UserPanel> {
         StringBuilder query = new StringBuilder("1 = 1");
         Map<String, Object> params = new HashMap<>();
 
-        if (request.getSSN() != null && !request.getSSN().isBlank()) {
-            query.append(" and lower(SSN) like :ssn");
+        if (request.getSsn() != null && !request.getSsn().isBlank()) {
+            query.append(" and lower(ssn) like :ssn");
             params.put(
                     "ssn",
-                    "%" + request.getSSN().trim().toLowerCase() + "%"
+                    "%" + request.getSsn().trim().toLowerCase() + "%"
             );
         }
 

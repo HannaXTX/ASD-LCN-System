@@ -2,7 +2,7 @@ package me.hkaibni.dto.search;
 
 public class UserSearchDTO extends SearchDTO {
 
-    private String SSN;
+    private String ssn;
     private String firstName;
     private String lastName;
     private String email;
@@ -64,11 +64,11 @@ public class UserSearchDTO extends SearchDTO {
 
 
 
-    public String getSSN() {
-        return SSN;
+    public String getSsn() {
+        return ssn;
     }
 
-    public void setSSN(String SSN) {
-        this.SSN = SSN;
+    public void setSsn(String ssn) {
+        this.ssn = ssn;
     }
 }

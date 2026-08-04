@@ -1,5 +1,8 @@
 package me.hkaibni.dto.entity_dto;
 
+import me.hkaibni.model.roles.Gender;
+
+import java.time.LocalDate;
 import java.util.UUID;
 
 public class UserDTO {
@@ -7,12 +10,22 @@ public class UserDTO {
 
     private UUID id;
     private String password;
-    private String SSN;
+    private String ssn;
     private String firstName;
     private String lastName;
+    private LocalDate dateOfBirth;
     private String email;
     private String addressId;
     private String phone;
+    private Gender gender;
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
 
     public UUID getId() {
         return id;
@@ -30,12 +43,12 @@ public class UserDTO {
         this.password = password;
     }
 
-    public String getSSN() {
-        return SSN;
+    public String getSsn() {
+        return ssn;
     }
 
-    public void setSSN(String SSN) {
-        this.SSN = SSN;
+    public void setSsn(String ssn) {
+        this.ssn = ssn;
     }
 
     public String getFirstName() {
@@ -76,5 +89,13 @@ public class UserDTO {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 }

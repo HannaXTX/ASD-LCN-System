@@ -6,8 +6,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import me.hkaibni.dto.response.ApiResponse;
 import me.hkaibni.dto.entity_dto.LoginDTO;
-import me.hkaibni.model.User;
-import me.hkaibni.model.UserPanel;
+import me.hkaibni.model.userdata.User;
+import me.hkaibni.model.userdata.UserPanel;
 import me.hkaibni.service.AuthService;
 import me.hkaibni.service.UserPanelService;
 import me.hkaibni.service.UserService;
@@ -148,7 +148,7 @@ public class AuthController {
                     .build();
         }
 
-        User user = userServ.getUser(loginDTO.getSSN());
+        User user = userServ.getUser(loginDTO.getSsn());
 
         return Response.ok(
                 new ApiResponse(
@@ -209,7 +209,7 @@ public class AuthController {
                     .build();
         }
 
-        UserPanel user = userPanelService.getUserPanel(loginDTO.getSSN());
+        UserPanel user = userPanelService.getUserPanel(loginDTO.getSsn());
 
         return Response.ok(
                 new ApiResponse(

@@ -2,8 +2,7 @@ package me.hkaibni.repository;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import me.hkaibni.model.Account;
-import me.hkaibni.model.Account;
+import me.hkaibni.model.userdata.Account;
 
 import java.util.List;
 import java.util.UUID;

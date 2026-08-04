@@ -8,7 +8,7 @@ import me.hkaibni.dto.response.ApiResponse;
 import me.hkaibni.dto.entity_dto.OTPDTO;
 import me.hkaibni.dto.entity_dto.UserDTO;
 import me.hkaibni.model.OTP;
-import me.hkaibni.model.User;
+import me.hkaibni.model.userdata.User;
 import me.hkaibni.security.GFG;
 import me.hkaibni.service.AuthService;
 import me.hkaibni.service.OTPService;
@@ -99,7 +99,7 @@ public class OTPController {
     @Consumes (MediaType.APPLICATION_JSON)
     @Produces (MediaType.APPLICATION_JSON)
     public Response verify(OTPDTO dto) throws Exception {
-        User user = userServ.getUser(dto.getSSN());
+        User user = userServ.getUser(dto.getSsn());
 
         OTP otp = otpServ.getOTP(user);
         if (otpServ.checkOTP(otp.getHashedOtp(),dto.getOtpcode())){

@@ -5,9 +5,8 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 
-import me.hkaibni.controller.OTPController;
 import me.hkaibni.model.OTP;
-import me.hkaibni.model.User;
+import me.hkaibni.model.userdata.User;
 import me.hkaibni.repository.OTPRepository;
 import me.hkaibni.repository.UserRepository;
 import me.hkaibni.security.TimeSec;
@@ -61,7 +60,7 @@ public class OTPService {
     @Transactional
     public boolean verifyUser(User user,OTP otp){
         otp.setVerified(true);
-        userService.getUser(user.getSSN()).getAccount().setVerified(1);
+        userService.getUser(user.getSsn()).getAccount().setVerified(1);
         return true;
     }
     @Transactional

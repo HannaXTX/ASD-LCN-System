@@ -1,5 +1,6 @@
 package me.hkaibni.controller;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -7,7 +8,11 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import me.hkaibni.dto.response.ApiResponse;
 import me.hkaibni.dto.entity_dto.FamilyDTO;
-import me.hkaibni.model.familyTree.Family;
+import me.hkaibni.dto.response.FamilyTreeResponse;
+import me.hkaibni.dto.search.FamilySearchDTO;
+import me.hkaibni.dto.search.UserSearchDTO;
+import me.hkaibni.model.family.Family;
+import me.hkaibni.model.userdata.User;
 import me.hkaibni.service.FamilyService;
 
 import java.time.LocalDateTime;
@@ -23,7 +28,7 @@ public class FamilyController {
     FamilyService familyServ;
 
     @GET
-    @RolesAllowed("ADMIN")
+//    @RolesAllowed("ADMIN")
     public Response getAllFamilies() {
 
         List<Family> families = familyServ.getAllFamilies();
@@ -164,31 +169,23 @@ public class FamilyController {
 
     @GET
     @Path("/search")
-    @RolesAllowed({"ADMIN", "USER"})
-    public Response searchFamilies(
-            @QueryParam("name") String familyName
-    ) {
-
-        if (familyName == null || familyName.isBlank()) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(
-                            new ApiResponse(
-                                    400,
-                                    "Family name is required",
-                                    null,
-                                    LocalDateTime.now()
-                            )
-                    )
-                    .build();
+    @RolesAllowed("ADMIN")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchFamilies(FamilySearchDTO dto) {
+        List<Family> results;
+        if (dto.hasNoCriteria()) {
+            results = familyServ.searchFamilies(dto.getValue(),dto.getPage(),dto.getPageSize());
         }
-
-        List<Family> families = familyServ.searchFamilies(familyName);
-
+        else {
+            results = familyServ.searchFamilies(dto);
+        }
         return Response.ok(
                 new ApiResponse(
                         200,
-                        "Family search completed successfully",
-                        families,
+                        results.isEmpty()
+                                ? "No users found"
+                                : "User search completed successfully",
+                        results,
                         LocalDateTime.now()
                 )
         ).build();
@@ -282,6 +279,37 @@ public class FamilyController {
                 )
         ).build();
     }
+    @GET
+    @Path("/{id}/tree")
+    @PermitAll
+    public Response getFamilyTree(@PathParam("id") UUID id) {
 
+        Family family = familyServ.getFamilyById(id);
+
+        if (family == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(
+                            new ApiResponse(
+                                    404,
+                                    "Family not found",
+                                    null,
+                                    LocalDateTime.now()
+                            )
+                    )
+                    .build();
+        }
+
+        FamilyTreeResponse familyTree =
+                familyServ.buildTree(id);
+
+        return Response.ok(
+                new ApiResponse(
+                        200,
+                        "Family tree retrieved successfully",
+                        familyTree,
+                        LocalDateTime.now()
+                )
+        ).build();
+    }
 
 }

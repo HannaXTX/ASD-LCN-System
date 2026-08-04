@@ -1,12 +1,10 @@
-package me.hkaibni.model.familyTree;
+package me.hkaibni.model.family;
 
 import jakarta.persistence.*;
-import me.hkaibni.model.User;
 import me.hkaibni.model.roles.Gender;
 
 import java.time.LocalDate;
 import java.util.UUID;
-
 @Entity
 @Table(name = "persons")
 public class Person {
@@ -15,18 +13,16 @@ public class Person {
     @GeneratedValue
     private UUID id;
 
+    @Column(nullable = false)
     private String firstName;
-    private String lastName;
 
+    private String lastName;
     private LocalDate dateOfBirth;
     private LocalDate dateOfDeath;
 
+
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
-    @OneToOne
-    @JoinColumn(name = "user_id", unique = true)
-    private User user; // nullable
 
     public UUID getId() {
         return id;
@@ -69,18 +65,11 @@ public class Person {
     }
 
     public Gender getGender() {
+
         return gender;
     }
 
     public void setGender(Gender gender) {
         this.gender = gender;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }

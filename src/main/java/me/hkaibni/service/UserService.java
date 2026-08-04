@@ -5,18 +5,15 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import me.hkaibni.dto.entity_dto.UserDTO;
 import me.hkaibni.dto.search.UserSearchDTO;
-import me.hkaibni.model.Account;
+import me.hkaibni.model.userdata.Account;
 import me.hkaibni.model.Address;
-import me.hkaibni.model.User;
-import me.hkaibni.repository.AccountRepository;
-import me.hkaibni.repository.AddressRepository;
-import me.hkaibni.repository.UserRepository;
-import me.hkaibni.repository.UserTypeRepository;
+import me.hkaibni.model.userdata.User;
+import me.hkaibni.model.family.Person;
+import me.hkaibni.repository.*;
+import me.hkaibni.repository.family.PersonRepository;
 import me.hkaibni.security.AESUtil;
 import me.hkaibni.security.PBKDF2;
 import me.hkaibni.service.results.UpdateStatus;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.sql.Update;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,14 +34,22 @@ public class UserService {
     UserTypeRepository userTypeRepository;
     @Inject
     OTPService otpService;
+    @Inject
+    PersonRepository personRepository;
 
 
     @Transactional
     public boolean createUser(UserDTO dto) throws Exception {
 
-        if (userRepository.findBySSN(dto.getSSN()) != null) {
+        String ssn = dto.getSsn();
+        if (ssn == null || ssn.isBlank()) {
+            throw new IllegalArgumentException("SSN is required");
+        }
+
+        if (userRepository.findBySSN(dto.getSsn()) != null) {
             return false;
         }
+
 
         byte[] salt = PBKDF2.getSalt();
 
@@ -55,13 +60,21 @@ public class UserService {
 
 
 
-        user.setSSN(dto.getSSN());
-        Address address = addressRepository.findById(dto.getAddressId());
+        user.setSsn(dto.getSsn());
+        Address address = addressRepository.findByCode(dto.getAddressId());
         user.setAddress(address);
         user.setPhone(dto.getPhone());
         user.setEmail(dto.getEmail());
         user.setCreatedAt(now);
         user.setModifiedAt(now);
+
+        Person person = new Person();
+        person.setDateOfBirth(dto.getDateOfBirth());
+        person.setFirstName(dto.getFirstName());
+        person.setLastName(dto.getLastName());
+        person.setGender(dto.getGender());
+
+        user.setPerson(person);
 
 
 
@@ -77,8 +90,9 @@ public class UserService {
 
         user.setAccount(account);
 
-        userRepository.save(user);
+        personRepository.save(person);
         accountRepository.save(account);
+        userRepository.save(user);
 
 
         return true;
@@ -108,10 +122,10 @@ public class UserService {
         if (user == null) {
             return UpdateStatus.NOT_FOUND;
         }
-        if (userRepository.findBySSN(dto.getSSN()) != null) {
+        if (userRepository.findBySSN(dto.getSsn()) != null) {
             return UpdateStatus.ALREADY_EXISTS;
         }
-        user.setSSN(dto.getSSN());
+        user.setSsn(dto.getSsn());
         Address address = addressRepository.findById(dto.getAddressId());
         user.setAddress(address);
         user.setPhone(dto.getPhone());
@@ -136,9 +150,12 @@ public class UserService {
 
     @Transactional
     public int approve(UUID uuid) {
+        if (getUser(uuid)==null)
+            return 1;
         getUser(uuid).getAccount().setApproved(1);
         return 0;
     }
+
 
 
     public List<User> searchUsers(UserSearchDTO request) {
