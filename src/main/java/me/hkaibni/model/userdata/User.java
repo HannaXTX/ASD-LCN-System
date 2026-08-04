@@ -1,10 +1,9 @@
-package me.hkaibni.model;
+package me.hkaibni.model.userdata;
 import jakarta.persistence.*;
+import me.hkaibni.model.Address;
+import me.hkaibni.model.family.Person;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.UUID;
 
 
@@ -17,7 +16,17 @@ public class User {
     private UUID id;
 
     @Column(nullable = false, unique = true)
-    private String SSN;
+    private String ssn;
+
+
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+            name = "person_id",
+            nullable = false,
+            unique = true
+    )
+    private Person person;
+
 
     @ManyToOne
     @JoinColumn(name = "address_id")
@@ -35,14 +44,23 @@ public class User {
     )
     private Account account;
 
-    private LocalDate dateOfBirth;
-    private String firstName;
-    private String lastName;
+//    private LocalDate dateOfBirth;
+//    private String firstName;
+//    private String lastName;
+
     private String email;
     private String phone;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
 
     public Account getAccount(){
         return account;
@@ -55,37 +73,12 @@ public class User {
 
     }
 
-    public String getSSN() {
-        return SSN;
+    public String getSsn() {
+        return ssn;
     }
 
-    public void setSSN(String SSN) {
-        this.SSN = SSN;
-    }
-
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+    public void setSsn(String SSN) {
+        this.ssn = SSN;
     }
 
     public LocalDateTime getCreatedAt() {

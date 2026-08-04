@@ -3,10 +3,9 @@ import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import me.hkaibni.controller.AuthController;
 import me.hkaibni.dto.entity_dto.LoginDTO;
-import me.hkaibni.model.User;
-import me.hkaibni.model.UserPanel;
+import me.hkaibni.model.userdata.User;
+import me.hkaibni.model.userdata.UserPanel;
 import me.hkaibni.repository.UserPanelRepository;
 import me.hkaibni.repository.UserRepository;
 import me.hkaibni.security.AESUtil;
@@ -29,7 +28,7 @@ public class AuthService {
     @Transactional
     public LoginStatus loginUser(LoginDTO dto) throws Exception {
 
-        User user = userRepository.findBySSN(dto.getSSN());
+        User user = userRepository.findBySSN(dto.getSsn());
 
         if (user == null) {
             return LoginStatus.INVALID_CRED;
@@ -61,7 +60,7 @@ public class AuthService {
     @Transactional
     public LoginStatus loginPanel(LoginDTO dto) throws Exception {
 
-        UserPanel user = userPanelRepository.findBySSN(dto.getSSN());
+        UserPanel user = userPanelRepository.findBySsn(dto.getSsn());
 
         if (user == null) {
             return LoginStatus.INVALID_CRED;

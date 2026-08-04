@@ -8,7 +8,7 @@ public class LoginDTO {
             example = "123456789",
             required = true
     )
-    private String SSN;
+    private String ssn;
     @Schema(
             description = "User's password",
             example = "SecurePassword123!",
@@ -17,12 +17,12 @@ public class LoginDTO {
     )
     private String password;
 
-    public String getSSN() {
-        return SSN;
+    public String getSsn() {
+        return ssn;
     }
 
-    public void setSSN(String SSN) {
-        this.SSN = SSN;
+    public void setSsn(String ssn) {
+        this.ssn = ssn;
     }
 
     public String getPassword() {

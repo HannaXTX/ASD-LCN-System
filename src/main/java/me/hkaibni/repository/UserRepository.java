@@ -4,7 +4,7 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import me.hkaibni.dto.search.UserSearchDTO;
-import me.hkaibni.model.User;
+import me.hkaibni.model.userdata.User;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +14,8 @@ import java.util.UUID;
 @ApplicationScoped
 public class UserRepository implements PanacheRepository<User> {
 
-    public User findBySSN(String SSN) {
-        return find("SSN", SSN).firstResult();
+    public User findBySSN(String ssn) {
+        return find("ssn", ssn).firstResult();
     }
     public User findById(UUID id) {
         return find("id", id).firstResult();
@@ -27,8 +27,8 @@ public class UserRepository implements PanacheRepository<User> {
     public List<User> ListUsers(){
         return this.listAll();
     }
-    public long deleteBySSN(String SSN) {
-        return delete("SSN", SSN);
+    public long deleteBySSN(String ssn) {
+        return delete("ssn", ssn);
     }
 
     public List<User> search(String value, Integer page, Integer pageSize) {
@@ -44,7 +44,7 @@ public class UserRepository implements PanacheRepository<User> {
                     lower(firstName) like :search
                     or lower(lastName) like :search
                     or lower(email) like :search
-                    or lower(SSN) like :search
+                    or lower(ssn) like :search
                     or lower(phone) like :search
                 )
                 """);
@@ -76,33 +76,33 @@ public class UserRepository implements PanacheRepository<User> {
         StringBuilder query = new StringBuilder("1 = 1");
         Map<String, Object> params = new HashMap<>();
 
-        if (request.getSSN() != null && !request.getSSN().isBlank()) {
-            query.append(" and lower(SSN) like :ssn");
+        if (request.getSsn() != null && !request.getSsn().isBlank()) {
+            query.append(" and lower(ssn) like :ssn");
             params.put(
                     "ssn",
-                    "%" + request.getSSN().trim().toLowerCase() + "%"
+                    "%" + request.getSsn().trim().toLowerCase() + "%"
             );
         }
 
-        if (request.getFirstName() != null &&
-                !request.getFirstName().isBlank()) {
-
-            query.append(" and lower(firstName) like :firstName");
-            params.put(
-                    "firstName",
-                    "%" + request.getFirstName().trim().toLowerCase() + "%"
-            );
-        }
-
-        if (request.getLastName() != null &&
-                !request.getLastName().isBlank()) {
-
-            query.append(" and lower(lastName) like :lastName");
-            params.put(
-                    "lastName",
-                    "%" + request.getLastName().trim().toLowerCase() + "%"
-            );
-        }
+//        if (request.getFirstName() != null &&
+//                !request.getFirstName().isBlank()) {
+//
+//            query.append(" and lower(firstName) like :firstName");
+//            params.put(
+//                    "firstName",
+//                    "%" + request.getFirstName().trim().toLowerCase() + "%"
+//            );
+//        }
+//
+//        if (request.getLastName() != null &&
+//                !request.getLastName().isBlank()) {
+//
+//            query.append(" and lower(lastName) like :lastName");
+//            params.put(
+//                    "lastName",
+//                    "%" + request.getLastName().trim().toLowerCase() + "%"
+//            );
+//        }
 
         if (request.getEmail() != null &&
                 !request.getEmail().isBlank()) {

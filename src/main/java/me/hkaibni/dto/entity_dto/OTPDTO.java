@@ -8,7 +8,7 @@ public class OTPDTO {
             example = "123456789",
             required = true
     )
-    private String SSN;
+    private String ssn;
     @Schema(
             description = "User's latest OTP sent",
             example = "123456",
@@ -17,12 +17,12 @@ public class OTPDTO {
     )
     private String otpcode;
 
-    public String getSSN() {
-        return SSN;
+    public String getSsn() {
+        return ssn;
     }
 
-    public void setSSN(String SSN) {
-        this.SSN = SSN;
+    public void setSsn(String ssn) {
+        this.ssn = ssn;
     }
 
     public String getOtpcode() {

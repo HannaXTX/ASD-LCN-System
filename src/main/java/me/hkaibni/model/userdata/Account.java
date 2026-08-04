@@ -1,10 +1,9 @@
-package me.hkaibni.model;
+package me.hkaibni.model.userdata;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import me.hkaibni.model.roles.UserType;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 
 @Entity

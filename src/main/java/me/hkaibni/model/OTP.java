@@ -1,6 +1,7 @@
 package me.hkaibni.model;
 
 import jakarta.persistence.*;
+import me.hkaibni.model.userdata.User;
 
 import java.util.Date;
 import java.util.UUID;

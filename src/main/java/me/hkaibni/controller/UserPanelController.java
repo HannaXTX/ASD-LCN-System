@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.Response;
 import me.hkaibni.dto.response.ApiResponse;
 import me.hkaibni.dto.entity_dto.UserDTO;
 import me.hkaibni.dto.search.UserSearchDTO;
-import me.hkaibni.model.UserPanel;
+import me.hkaibni.model.userdata.UserPanel;
 import me.hkaibni.service.UserPanelService;
 import me.hkaibni.service.results.UpdateStatus;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -131,13 +131,13 @@ public class UserPanelController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createUser(UserDTO user) throws Exception {
 
-        if (userServ.getUserPanel(user.getSSN()) != null)
+        if (userServ.getUserPanel(user.getSsn()) != null)
             return Response.status(Response.Status.CONFLICT)
                     .entity(
                             new ApiResponse(
                                     409,
                                     "SSN already exists!",
-                                    user.getSSN(), LocalDateTime.now()
+                                    user.getSsn(), LocalDateTime.now()
                             )
                     )
                     .build();
@@ -147,7 +147,7 @@ public class UserPanelController {
                             new ApiResponse(
                                     201,
                                     "Registration Successful, UserPanel created, Please enter OTP",
-                                    userServ.getUserPanel(user.getSSN()), LocalDateTime.now()
+                                    userServ.getUserPanel(user.getSsn()), LocalDateTime.now()
                             )
                     )
                     .build();
@@ -156,7 +156,7 @@ public class UserPanelController {
                         new ApiResponse(
                                 409,
                                 "SSN already exists!",
-                                user.getSSN(), LocalDateTime.now()
+                                user.getSsn(), LocalDateTime.now()
                         )
                 )
                 .build();

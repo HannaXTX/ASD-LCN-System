@@ -1,7 +1,6 @@
-package me.hkaibni.model.familyTree;
+package me.hkaibni.model.family;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 
@@ -11,7 +10,6 @@ public class Family {
 
     @Id
     @GeneratedValue
-    @UuidGenerator
     private UUID id;
 
     @Column(name = "name_en", nullable = false, length = 100)

@@ -4,45 +4,52 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import me.hkaibni.dto.entity_dto.FamilyDTO;
-import me.hkaibni.dto.response.FamilyTreeResponse;
-import me.hkaibni.dto.search.FamilySearchDTO;
-import me.hkaibni.dto.search.UserSearchDTO;
+import me.hkaibni.dto.entity_dto.FamilyMemberDTO;
 import me.hkaibni.model.family.Family;
-import me.hkaibni.model.userdata.User;
+import me.hkaibni.model.family.FamilyMember;
+import me.hkaibni.model.family.Person;
 import me.hkaibni.repository.family.FamilyMemberRepository;
 import me.hkaibni.repository.family.FamilyRepository;
+import me.hkaibni.repository.family.PersonRepository;
 
 import java.util.List;
 import java.util.UUID;
 
 @ApplicationScoped
-public class FamilyService {
+public class FamilyMemberService {
 
+    @Inject
+    FamilyMemberRepository familyMemberRepository;
     @Inject
     FamilyRepository familyRepository;
     @Inject
-    FamilyMemberRepository familyMemberRepository;
+    PersonRepository personRepository;
 
     @Transactional
-    public int createFamily(FamilyDTO dto) {
+    public int createFamilyMember(FamilyMemberDTO dto) {
 
         if (dto == null) {
             return 1;
         }
+        Family family = familyRepository.findFamilyById(dto.getFamily());
+        Person person = personRepository.findById(dto.getPerson());
 
-        if (familyRepository.findByNameAr(dto.getNameAr()) != null &&
-                familyRepository.findByNameEn(dto.getNameEn()) != null) {
+        if (person == null ||
+                family== null) {
+            return 1;
+        }
+
+        if (familyMemberRepository.findByPersonAndFamily(person,family)!= null) {
             return 3;
         }
 
-        Family family = new Family();
+        FamilyMember familyMember = new FamilyMember();
 
-        family.setNameAr(dto.getNameAr());
-        family.setNameEn(dto.getNameEn());
+        familyMember.setFamily(familyRepository.findFamilyById(dto.getFamily()));
+        familyMember.setPerson(personRepository.findById(dto.getPerson()));
+        familyMember.setRootPerson(dto.isRootPerson());
 
-
-
-        familyRepository.save(family);
+        familyMemberRepository.save(familyMember);
 
         return 0;
     }
@@ -64,17 +71,8 @@ public class FamilyService {
         return familyRepository.listFamilies();
     }
 
-    public List<Family> searchFamiliesEn(String familyName) {
+    public List<Family> searchFamilies(String familyName) {
         return familyRepository.searchByNameEn(familyName);
-    }
-
-
-    public List<Family> searchFamilies(FamilySearchDTO request) {
-        return familyRepository.search(request);
-    }
-
-    public List<Family> searchFamilies(String request, int page,int pageSize) {
-        return familyRepository.search(request,page,pageSize);
     }
 
     @Transactional
@@ -105,7 +103,4 @@ public class FamilyService {
         return familyRepository.deleteFamilyById(id)>0;
     }
 
-    public FamilyTreeResponse buildTree(UUID id) {
-        return familyMemberRepository.buildTree(id);
-    }
 }

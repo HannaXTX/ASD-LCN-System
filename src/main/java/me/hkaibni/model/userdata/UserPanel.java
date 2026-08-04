@@ -1,5 +1,6 @@
-package me.hkaibni.model;
+package me.hkaibni.model.userdata;
 import jakarta.persistence.*;
+import me.hkaibni.model.Address;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ public class UserPanel {
     private UUID id;
 
     @Column(nullable = false, unique = true)
-    private String SSN;
+    private String ssn;
 
     @ManyToOne
     @JoinColumn(name = "address_id")
@@ -55,12 +56,12 @@ public class UserPanel {
 
     }
 
-    public String getSSN() {
-        return SSN;
+    public String getSsn() {
+        return ssn;
     }
 
-    public void setSSN(String SSN) {
-        this.SSN = SSN;
+    public void setSsn(String SSN) {
+        this.ssn = SSN;
     }
 
 
