@@ -4,19 +4,28 @@ import jakarta.persistence.*;
 import me.hkaibni.model.roles.Gender;
 
 import java.time.LocalDate;
-import java.util.UUID;
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "persons")
 public class Person {
 
     @Id
-    @GeneratedValue
-    private UUID id;
+    private String id;
 
     @Column(nullable = false)
-    private String firstName;
+    private String firstNameEn;
+    private String firstNameAr;
 
-    private String lastName;
+    private String middleNameAr;
+    private String middleNameEn;
+
+    private String lastNameAr;
+    private String lastNameEn;
+
+    private String fullNameEn;
+    private String fullNameAr;
+
     private LocalDate dateOfBirth;
     private LocalDate dateOfDeath;
 
@@ -24,28 +33,69 @@ public class Person {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    public UUID getId() {
+
+    // AUDIT DATA
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
+    private String modifiedBy;
+    private String createdBy;
+
+
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(LocalDateTime modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
+
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getFirstNameEn() {
+        return firstNameEn;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setFirstNameEn(String firstName) {
+        this.firstNameEn = firstName;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getLastNameEn() {
+        return lastNameEn;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setLastNameEn(String lastName) {
+        this.lastNameEn = lastName;
     }
 
     public LocalDate getDateOfBirth() {
@@ -72,4 +122,46 @@ public class Person {
     public void setGender(Gender gender) {
         this.gender = gender;
     }
+
+    public String getFirstNameAr() {
+        return firstNameAr;
+    }
+
+    public void setFirstNameAr(String firstNameAr) {
+        this.firstNameAr = firstNameAr;
+    }
+
+    public String getMiddleNameAr() {
+        return middleNameAr;
+    }
+
+    public void setMiddleNameAr(String middleNameAr) {
+        this.middleNameAr = middleNameAr;
+    }
+
+    public String getMiddleNameEn() {
+        return middleNameEn;
+    }
+
+    public void setMiddleNameEn(String middleNameEn) {
+        this.middleNameEn = middleNameEn;
+    }
+
+    public String getLastNameAr() {
+        return lastNameAr;
+    }
+
+    public void setLastNameAr(String lastNameAr) {
+        this.lastNameAr = lastNameAr;
+    }
+
+    public String getFullNameEn() {
+        return fullNameEn;
+    }
+
+    public String getFullNameAr() {
+        return fullNameAr;
+    }
+
+
 }

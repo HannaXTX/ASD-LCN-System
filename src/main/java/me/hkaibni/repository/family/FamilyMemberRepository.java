@@ -4,14 +4,14 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
-import me.hkaibni.controller.FamilyMemberController;
+import me.hkaibni.controller.family_related.FamilyMemberController;
 import me.hkaibni.dto.response.FamilyNode;
 import me.hkaibni.dto.response.FamilyTreeResponse;
 import me.hkaibni.dto.response.FamilyUnitNode;
 import me.hkaibni.model.family.Family;
 import me.hkaibni.model.family.FamilyMember;
 import me.hkaibni.model.family.Person;
-import me.hkaibni.service.FamilyMemberService;
+import me.hkaibni.service.family.FamilyMemberService;
 
 import java.util.*;
 
@@ -19,7 +19,7 @@ import java.util.*;
 public class FamilyMemberRepository implements PanacheRepository<FamilyMember> {
 
     @Inject
-    PersonRelationshipRepository personRelationshipRepository;
+    TreeRelationshipRepository personRelationshipRepository;
     @Inject
     FamilyRepository familyRepository;
     @Inject
@@ -35,7 +35,7 @@ public class FamilyMemberRepository implements PanacheRepository<FamilyMember> {
     public FamilyMember findById(UUID id) {
         return find("id", id).firstResult();
     }
-    public FamilyMember findByPersonId(UUID id){
+    public FamilyMember findByPersonId(String id){
         return find("person.id",id).firstResult();
     }
     public FamilyMember findByFamilyId(UUID id){
@@ -67,8 +67,8 @@ public class FamilyMemberRepository implements PanacheRepository<FamilyMember> {
     }
 
     public boolean existsByFamilyAndPerson(
-            UUID familyId,
-            UUID personId
+            String familyId,
+            String personId
     ) {
         return count(
                 "family.id = ?1 and person.id = ?2",
@@ -85,10 +85,10 @@ public class FamilyMemberRepository implements PanacheRepository<FamilyMember> {
 //        return ;
 //    }
 
-    public List<FamilyMember> getSpouses(UUID id){
+    public List<FamilyMember> getSpouses(String id){
         return personRelationshipRepository.getSpousesFemaleById(id);
     }
-    public List<FamilyMember> getChildren(UUID id){
+    public List<FamilyMember> getChildren(String id){
         return personRelationshipRepository.getChildrenById(id);
     }
 
@@ -116,7 +116,7 @@ public class FamilyMemberRepository implements PanacheRepository<FamilyMember> {
 
     private FamilyNode buildFamilyNode(
             FamilyMember currentMember,
-            Set<UUID> visited
+            Set<String> visited
     ) {
 
         Person currentPerson = currentMember.getPerson();

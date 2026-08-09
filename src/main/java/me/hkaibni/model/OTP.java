@@ -3,20 +3,19 @@ package me.hkaibni.model;
 import jakarta.persistence.*;
 import me.hkaibni.model.userdata.User;
 
+import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.UUID;
 
 @Entity
 public class OTP {
 
     @Id
-    @GeneratedValue
-    private UUID id;
+    private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    private String hashedOtp;
+    private String Otp;
 
     private String purpose;
 
@@ -24,15 +23,35 @@ public class OTP {
 
     private Boolean verified;
 
+
+
+    // AUDIT DATA
     private Date createdAt;
-
     private Date expiresAt;
+    private LocalDateTime modifiedAt;
+    private String createdBy;
 
-    public UUID getId() {
+    public LocalDateTime getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(LocalDateTime modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -44,12 +63,12 @@ public class OTP {
         this.user = user;
     }
 
-    public String getHashedOtp() {
-        return hashedOtp;
+    public String getOtp() {
+        return Otp;
     }
 
-    public void setHashedOtp(String hashedOtp) {
-        this.hashedOtp = hashedOtp;
+    public void setOtp(String hashedOtp) {
+        this.Otp = hashedOtp;
     }
 
     public String getPurpose() {

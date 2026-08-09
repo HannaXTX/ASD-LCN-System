@@ -1,31 +1,20 @@
 package me.hkaibni.model.userdata;
 import jakarta.persistence.*;
 import me.hkaibni.model.Address;
-import me.hkaibni.model.family.Person;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 
 @Entity
-@Table (name = "users")
-public class User {
+@Table (name = "panel_users")
+public class PanelUser {
 
     @Id
     private String id;
 
     @Column(nullable = false, unique = true)
     private String ssn;
-
-
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(
-            name = "person_id",
-            nullable = false,
-            unique = true
-    )
-    private Person person;
-
 
     @ManyToOne
     @JoinColumn(name = "address_id")
@@ -41,11 +30,13 @@ public class User {
             nullable = false,
             unique = true
     )
-    private UserAccount userAccount;
+    private PanelUserAccount userAccount;
 
+    private LocalDate dateOfBirth;
+    private String firstName;
+    private String lastName;
     private String email;
     private String phone;
-
 
     // AUDIT DATA
     private LocalDateTime lastLoggedAt;
@@ -54,40 +45,18 @@ public class User {
     private String modifiedBy;
     private String createdBy;
 
-    public UserAccount getUserAccount() {
+
+
+    public PanelUserAccount getAccount(){
         return userAccount;
     }
 
-    public void setUserAccount(UserAccount userAccount) {
+    public void setAccount(PanelUserAccount userAccount) {
         this.userAccount = userAccount;
+
     }
-
-    public LocalDateTime getLastLoggedAt() {
-        return lastLoggedAt;
-    }
-
-    public void setLastLoggedAt(LocalDateTime lastLoggedAt) {
-        this.lastLoggedAt = lastLoggedAt;
-    }
-
-
-
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
-    }
-
-    public UserAccount getAccount(){
-        return userAccount;
-    }
-
-    public void setAccount(UserAccount userAccount) {
-        this.userAccount = userAccount;
-    }
-    public User() {
+;
+    public PanelUser() {
 
     }
 
@@ -97,6 +66,31 @@ public class User {
 
     public void setSsn(String SSN) {
         this.ssn = SSN;
+    }
+
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -140,21 +134,8 @@ public class User {
     }
 
 
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
 
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
 
     public String getId() {
         return id;
@@ -163,6 +144,8 @@ public class User {
     public void setId(String id) {
         this.id = id;
     }
+
+
 
 
 }
