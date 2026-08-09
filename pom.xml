@@ -30,6 +30,8 @@
         </dependencies>
     </dependencyManagement>
 
+
+
     <dependencies>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -78,7 +80,11 @@
             <artifactId>smallrye-jwt-build</artifactId>
             <version>4.6.3</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>3.3.2</version>
+        </dependency>
     </dependencies>
 
     <build>

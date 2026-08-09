@@ -1,20 +1,27 @@
 package me.hkaibni.model.family;
 
 import jakarta.persistence.*;
+import me.hkaibni.model.roles.RelationshipType;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(
-        name = "family_members",
+        name = "tree_relationships",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_family_member",
-                        columnNames = {"family_id", "person_id"}
+                        name = "uk_person_relationship",
+                        columnNames = {
+                                "family_id",
+                                "person_a_id",
+                                "person_b_id",
+                                "relationship_type"
+                        }
                 )
         }
 )
-public class FamilyMember {
+public class TreeRelationship {
 
     @Id
     private String id;
@@ -24,17 +31,33 @@ public class FamilyMember {
     private Family family;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "person_id", nullable = false)
-    private Person person;
+    @JoinColumn(name = "person_a_id", nullable = false)
+    private Person personA;
 
-    @Column(name = "is_root_person", nullable = false)
-    private boolean rootPerson;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "person_b_id", nullable = false)
+    private Person personB;
+
+    @Enumerated(EnumType.STRING)
+    @Column(
+            name = "relationship_type",
+            nullable = false,
+            length = 40
+    )
+    private RelationshipType type;
+
 
     // AUDIT DATA
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private String modifiedBy;
     private String createdBy;
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -68,13 +91,6 @@ public class FamilyMember {
         this.createdBy = createdBy;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public FamilyMember() {
-    }
-
     public String getId() {
         return id;
     }
@@ -87,19 +103,27 @@ public class FamilyMember {
         this.family = family;
     }
 
-    public Person getPerson() {
-        return person;
+    public Person getPersonA() {
+        return personA;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
+    public void setPersonA(Person personA) {
+        this.personA = personA;
     }
 
-    public boolean isRootPerson() {
-        return rootPerson;
+    public Person getPersonB() {
+        return personB;
     }
 
-    public void setRootPerson(boolean rootPerson) {
-        this.rootPerson = rootPerson;
+    public void setPersonB(Person personB) {
+        this.personB = personB;
+    }
+
+    public RelationshipType getType() {
+        return type;
+    }
+
+    public void setType(RelationshipType type) {
+        this.type = type;
     }
 }
