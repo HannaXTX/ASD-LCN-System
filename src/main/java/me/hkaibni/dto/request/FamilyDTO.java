@@ -1,10 +1,6 @@
-package me.hkaibni.dto.entity_dto;
-
-import java.lang.ref.SoftReference;
+package me.hkaibni.dto.request;
 
 public class FamilyDTO {
-
-
 
     String nameAr;
     String nameEn;

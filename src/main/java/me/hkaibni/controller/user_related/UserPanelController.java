@@ -5,21 +5,20 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import me.hkaibni.dto.request.IdRequest;
+import me.hkaibni.dto.request.PanelUserCreateDTO;
 import me.hkaibni.dto.response.ApiResponse;
-import me.hkaibni.dto.entity_dto.UserDTO;
 import me.hkaibni.dto.search.UserSearchDTO;
 import me.hkaibni.model.userdata.PanelUser;
 import me.hkaibni.service.users.PanelUserService;
 import me.hkaibni.service.status.UpdateStatus;
+import me.hkaibni.utils.ResponseUtil;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Path("/panel")
-
-
 public class UserPanelController {
     @Inject
     PanelUserService userServ;
@@ -48,53 +47,58 @@ public class UserPanelController {
         ).build();
     }
 
-    @Path("/{SSN}")
+    @Path("/username/{username}")
     @GET
-    @RolesAllowed("USER")
+    @RolesAllowed("ADMIN")
     @Produces (MediaType.APPLICATION_JSON)
-    public Response getUser(@PathParam("SSN") String SSN){
+    public Response getUserByUsername(@PathParam("username") String username){
 
-        PanelUser user = userServ.getUserPanel(SSN);
+        PanelUser user = userServ.getUserPanelByUsername(username);
 
-        return Response.ok(
-                new ApiResponse(
-                        200,
-                        "UserPanel retrieved successfully",
-                        user,LocalDateTime.now()
-                )
-        ).build();
+        return ResponseUtil.ok("UserPanel retrieved successfully", user);
     }
 
-    @Path("/{SSN}")
+    @Path("/username/{username}")
+    @RolesAllowed("ADMIN")
     @DELETE
     @Produces (MediaType.APPLICATION_JSON)
-    public Response deleteUser(@PathParam("SSN") String SSN){
+    public Response deleteUserByUsername(@PathParam("username") String username){
 
-        if (!userServ.deleteUserPanel(SSN)) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(
-                            new ApiResponse(
-                                    404,
-                                    "UserPanel not found",
-                                    null,LocalDateTime.now()
-                            )
-                    )
-                    .build();        }
-
-        return Response.ok(
-                new ApiResponse(
-                        200,
-                        "UserPanel deleted successfully",
-                        null,LocalDateTime.now()
-                )
-        ).build();
+        if (!userServ.deleteUserPanelByUsername(username)) {
+            return ResponseUtil.notFound("UserPanel not found");
+        }
+        return ResponseUtil.ok("UserPanel deleted successfully",null);
     }
+
+    @Path("/id/{id}")
+    @GET
+    @RolesAllowed("ADMIN")
+    @Produces (MediaType.APPLICATION_JSON)
+    public Response getUserById(@PathParam("id") String id){
+
+        PanelUser user = userServ.getUserPanelById(id);
+
+        return ResponseUtil.ok("UserPanel retrieved successfully", user);
+    }
+
+    @Path("/id/{id}")
+    @DELETE
+    @Produces (MediaType.APPLICATION_JSON)
+    public Response deleteUserById(@PathParam("id") String id){
+
+        if (!userServ.deleteUserPanelById(id)) {
+            return ResponseUtil.notFound("UserPanel not found");
+        }
+        return ResponseUtil.ok("UserPanel deleted successfully",null);
+    }
+
+
     @Path("/{id}")
     @PUT
-    @RolesAllowed("USER")
+    @RolesAllowed("ADMIN")
     @Consumes (MediaType.APPLICATION_JSON)
     @Produces (MediaType.APPLICATION_JSON)
-    public Response updateUser(UserDTO user,@PathParam("id") UUID id) throws Exception {
+    public Response updateUser(PanelUserCreateDTO user,@PathParam("id") String id) throws Exception {
         UpdateStatus operation = userServ.updateUserPanel(id,user);
         if (operation==UpdateStatus.SUCCESS)
             return Response.ok(
@@ -129,15 +133,15 @@ public class UserPanelController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createUser(UserDTO user) throws Exception {
+    public Response createUser(PanelUserCreateDTO user) throws Exception {
 
-        if (userServ.getUserPanel(user.getSsn()) != null)
+        if (userServ.getUserPanelByUsername(user.getUsername()) != null)
             return Response.status(Response.Status.CONFLICT)
                     .entity(
                             new ApiResponse(
                                     409,
-                                    "SSN already exists!",
-                                    user.getSsn(), LocalDateTime.now()
+                                    "Username already exists!",
+                                    user.getUsername(), LocalDateTime.now()
                             )
                     )
                     .build();
@@ -147,7 +151,7 @@ public class UserPanelController {
                             new ApiResponse(
                                     201,
                                     "Registration Successful, UserPanel created, Please enter OTP",
-                                    userServ.getUserPanel(user.getSsn()), LocalDateTime.now()
+                                    userServ.getUserPanelByUsername(user.getUsername()), LocalDateTime.now()
                             )
                     )
                     .build();
@@ -155,8 +159,8 @@ public class UserPanelController {
                 .entity(
                         new ApiResponse(
                                 409,
-                                "SSN already exists!",
-                                user.getSsn(), LocalDateTime.now()
+                                "Username already exists!",
+                                user.getUsername(), LocalDateTime.now()
                         )
                 )
                 .build();
@@ -168,7 +172,7 @@ public class UserPanelController {
     @RolesAllowed("ADMIN")
     @Produces (MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response approve(UserDTO dto) throws Exception {
+    public Response approve(IdRequest dto) throws Exception {
         int operation = userServ.approve(dto.getId());
         if (operation==0)
             return Response.ok(

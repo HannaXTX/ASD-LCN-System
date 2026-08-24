@@ -1,6 +1,7 @@
 package me.hkaibni.model.media;
 
 import jakarta.persistence.*;
+import org.hibernate.Length;
 
 import java.time.LocalDateTime;
 
@@ -17,11 +18,10 @@ public class Attachment {
     @Column(name = "content_type", nullable = false, length = 150)
     private String contentType;
 
-    @Lob
     @Column(
             name = "file_data",
             nullable = false,
-            columnDefinition = "LONGBLOB"
+            length = Length.LONG32
     )
     private byte[] fileData;
 
@@ -35,7 +35,7 @@ public class Attachment {
     )
     private LocalDateTime createdAt;
 
-    @JoinColumn(name = "uploaded_by", nullable = false)
+    @Column(name = "uploaded_by", nullable = false)
     private String uploadedBy;
 
     public Attachment() {

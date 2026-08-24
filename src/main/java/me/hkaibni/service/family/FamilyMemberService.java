@@ -3,8 +3,8 @@ package me.hkaibni.service.family;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import me.hkaibni.dto.entity_dto.FamilyDTO;
-import me.hkaibni.dto.entity_dto.FamilyMemberDTO;
+import me.hkaibni.dto.request.FamilyDTO;
+import me.hkaibni.dto.request.FamilyMemberDTO;
 import me.hkaibni.model.family.Family;
 import me.hkaibni.model.family.FamilyMember;
 import me.hkaibni.model.family.Person;
@@ -26,36 +26,23 @@ public class FamilyMemberService {
     PersonRepository personRepository;
 
     @Transactional
-    public int createFamilyMember(FamilyMemberDTO dto) {
-
-        if (dto == null) {
-            return 1;
-        }
-        Family family = familyRepository.findFamilyById(dto.getFamily());
-        Person person = personRepository.findById(dto.getPerson());
-
-        if (person == null ||
-                family== null) {
-            return 1;
-        }
-
-        if (familyMemberRepository.findByPersonAndFamily(person,family)!= null) {
-            return 3;
-        }
+    public FamilyMember createFamilyMember(FamilyMemberDTO dto, Family family, Person person) {
 
         FamilyMember familyMember = new FamilyMember();
 
         familyMember.setId(UUID.randomUUID().toString());
-        familyMember.setFamily(familyRepository.findFamilyById(dto.getFamily()));
-        familyMember.setPerson(personRepository.findById(dto.getPerson()));
+        familyMember.setFamily(family);
+        familyMember.setPerson(person);
         familyMember.setRootPerson(dto.isRootPerson());
 
         familyMemberRepository.save(familyMember);
 
-        return 0;
+        return familyMember;
     }
 
-    public Family getFamilyById(UUID id) {
+
+
+    public Family getFamilyById(String id) {
         return familyRepository.findFamilyById(id);
     }
 
@@ -77,7 +64,7 @@ public class FamilyMemberService {
     }
 
     @Transactional
-    public int updateFamily(UUID id, FamilyDTO dto) {
+    public int updateFamily(String id, FamilyDTO dto) {
 
         Family family = familyRepository.findFamilyById(id);
 
@@ -100,7 +87,7 @@ public class FamilyMemberService {
     }
 
     @Transactional
-    public boolean deleteFamilyById(UUID id) {
+    public boolean deleteFamilyById(String id) {
         return familyRepository.deleteFamilyById(id)>0;
     }
 

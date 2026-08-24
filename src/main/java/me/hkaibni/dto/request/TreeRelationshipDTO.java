@@ -1,37 +1,35 @@
-package me.hkaibni.dto.entity_dto;
+package me.hkaibni.dto.request;
 
-import me.hkaibni.model.roles.RelationshipType;
-
-import java.util.UUID;
+import me.hkaibni.model.roles_types.RelationshipType;
 
 public class TreeRelationshipDTO {
 
-    private UUID familyId;
-    private UUID personAId;
-    private UUID personBId;
+    private String familyId;
+    private String personAId;
+    private String personBId;
     private RelationshipType type;
 
-    public UUID getFamilyId() {
+    public String getFamilyId() {
         return familyId;
     }
 
-    public void setFamilyId(UUID familyId) {
+    public void setFamilyId(String familyId) {
         this.familyId = familyId;
     }
 
-    public UUID getPersonAId() {
+    public String getPersonAId() {
         return personAId;
     }
 
-    public void setPersonAId(UUID personAId) {
+    public void setPersonAId(String personAId) {
         this.personAId = personAId;
     }
 
-    public UUID getPersonBId() {
+    public String getPersonBId() {
         return personBId;
     }
 
-    public void setPersonBId(UUID personBId) {
+    public void setPersonBId(String personBId) {
         this.personBId = personBId;
     }
 

@@ -4,8 +4,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
-import me.hkaibni.dto.entity_dto.NewsDTO;
+import me.hkaibni.dto.request.IdRequest;
+import me.hkaibni.dto.request.NewsDTO;
 import me.hkaibni.model.media.Attachment;
+import me.hkaibni.model.media.Blog;
 import me.hkaibni.model.media.News;
 import me.hkaibni.repository.media.AttachmentRepository;
 import me.hkaibni.repository.media.NewsRepository;
@@ -33,7 +35,7 @@ public class NewsService {
     }
 
     @Transactional
-    public News getNews(UUID newsId) {
+    public News getNews(String newsId) {
 
         News news = newsRepository.findById(newsId);
 
@@ -56,7 +58,7 @@ public class NewsService {
         news.setId(UUID.randomUUID().toString());
         news.setTitle(dto.getTitle());
         news.setContent(dto.getContent());
-        news.setPublishedAt(dto.getPublishedAt());
+        news.setPublishedAt(LocalDateTime.now());
         news.setCreatedBy(creatorId);
         news.setCreatedAt(LocalDateTime.now());
         news.setModifiedAt(LocalDateTime.now());
@@ -71,19 +73,16 @@ public class NewsService {
     }
 
     @Transactional
-    public News updateNews(UUID newsId, NewsDTO dto) {
+    public News updateNews(String id, NewsDTO dto) {
 
-        News news = newsRepository.findById(newsId);
+        News news = newsRepository.findById(id);
 
-        if (news == null) {
-            throw new NotFoundException(
-                    "News not found: " + newsId
-            );
-        }
+        if (news == null)
+            return null;
 
         news.setTitle(dto.getTitle());
         news.setContent(dto.getContent());
-        news.setPublishedAt(dto.getPublishedAt());
+//        news.setPublishedAt(dto.getPublishedAt());
 
         if (dto.getAttachmentIds() != null) {
             news.setAttachments(
@@ -96,8 +95,34 @@ public class NewsService {
         return news;
     }
 
+//    @Transactional
+//    public News attachFile(IdRequest dto) {
+//
+//        News news = newsRepository.findById(newsId);
+//
+//        if (news == null) {
+//            throw new NotFoundException(
+//                    "News not found: " + newsId
+//            );
+//        }
+//
+//        news.setTitle(dto.getTitle());
+//        news.setContent(dto.getContent());
+//        news.setPublishedAt(dto.getPublishedAt());
+//
+//        if (dto.getAttachmentIds() != null) {
+//            news.setAttachments(
+//                    getAttachments(dto.getAttachmentIds())
+//            );
+//        }
+//
+//        news.setModifiedAt(LocalDateTime.now());
+//
+//        return news;
+//    }
+
     @Transactional
-    public void deleteNews(UUID newsId) {
+    public void deleteNews(String newsId) {
 
         News news = newsRepository.findById(newsId);
 

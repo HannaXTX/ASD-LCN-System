@@ -1,10 +1,9 @@
 package me.hkaibni.model.family;
 
 import jakarta.persistence.*;
-import me.hkaibni.model.roles.RelationshipType;
+import me.hkaibni.model.roles_types.RelationshipType;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(

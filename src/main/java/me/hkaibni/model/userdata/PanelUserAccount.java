@@ -1,10 +1,9 @@
 package me.hkaibni.model.userdata;
 
 import jakarta.persistence.*;
-import me.hkaibni.model.roles.UserRole;
+import me.hkaibni.model.roles_types.UserRole;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table (name = "panel_user_accounts")
@@ -13,7 +12,7 @@ public class PanelUserAccount {
     private String id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "user_type_id", nullable = false)
+    @JoinColumn(name = "user_role_id", nullable = false)
     private UserRole userRole;
 
     @Column(nullable = false)

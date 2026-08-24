@@ -1,14 +1,14 @@
-package me.hkaibni.dto.entity_dto;
+package me.hkaibni.dto.request;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-public class LoginDTO {
+public class PanelLoginDTO {
     @Schema(
-            description = "User's Social Security Number",
-            example = "123456789",
+            description = "Panel username",
+            example = "username",
             required = true
     )
-    private String ssn;
+    private String username;
     @Schema(
             description = "User's password",
             example = "SecurePassword123!",
@@ -17,12 +17,12 @@ public class LoginDTO {
     )
     private String password;
 
-    public String getSsn() {
-        return ssn;
+    public String getUsername() {
+        return username;
     }
 
-    public void setSsn(String ssn) {
-        this.ssn = ssn;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {

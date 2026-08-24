@@ -6,13 +6,15 @@ import jakarta.transaction.Transactional;
 
 
 import me.hkaibni.model.OTP;
+import me.hkaibni.model.roles_types.OtpPurpose;
 import me.hkaibni.model.userdata.User;
+import me.hkaibni.model.userdata.UserAccount;
 import me.hkaibni.repository.user.OTPRepository;
 import me.hkaibni.repository.user.UserRepository;
-import me.hkaibni.security.TimeSec;
+import me.hkaibni.utils.TimeSec;
 import me.hkaibni.service.status.OtpStatus;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,9 +30,10 @@ public class OTPService {
 
 
     @Transactional
-    public OtpStatus createOTP(User user, String purpose, String OTP_CODE) throws Exception {
+    public OtpStatus createOTP(User user, OtpPurpose otpPurpose, String OTP_CODE) throws Exception {
 
-        int attempts = (int) OTPRepository.countOtpsAfter(user, TimeSec.getDailyResetTime())+1;
+        int attempts = (int) OTPRepository.countOtpAfter(user, TimeSec.getDailyResetTime(),otpPurpose)+1;
+        LocalDateTime now = LocalDateTime.now();
 
         if (user==null)
             return OtpStatus.NULL;
@@ -40,10 +43,11 @@ public class OTPService {
         OTP otp = new OTP();
         otp.setId(UUID.randomUUID().toString());
         otp.setUser(user);
-        otp.setPurpose(purpose);
+        otp.setPurpose(otpPurpose);
         otp.setVerified(false);
         otp.setOtp(OTP_CODE);
-        otp.setCreatedAt(new Date(System.currentTimeMillis()));
+        otp.setCreatedAt(now);
+        otp.setExpiresAt(now.plusSeconds(300));
         otp.setAttempts(attempts);
 
         OTPRepository.save(otp);
@@ -55,14 +59,74 @@ public class OTPService {
         return OTPRepository.findByUser(user);
     }
     @Transactional
+    public OTP getOtpWithPurpose(User user,OtpPurpose purpose) {
+        return OTPRepository.findByUser(user,purpose);
+    }
+
+
+    @Transactional
     public boolean checkOTP(String otpOriginal, String otpCheck ){
         return otpOriginal.equals(otpCheck);
     }
+
     @Transactional
-    public boolean verifyUser(User user,OTP otp){
+    public OtpStatus verifyOTP(String userId, String otpCode) {
+
+        User user = userRepository.findById(userId);
+
+        if (user == null) {
+            return OtpStatus.NOT_FOUND;
+        }
+
+        OTP otp = getOtpWithPurpose(user,OtpPurpose.REGISTRATION);
+
+        if (otp == null) {
+            return OtpStatus.NOT_FOUND;
+        }
+
+        if (!checkOTP(otp.getOtp(), otpCode)) {
+            return OtpStatus.WRONG_OTP;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
         otp.setVerified(true);
-        userService.getUserBySsn(user.getSsn()).getAccount().setVerified(1);
-        return true;
+        otp.setModifiedAt(now);
+
+        UserAccount account = user.getAccount();
+
+        account.setVerified(1);
+        account.setModifiedAt(now);
+        account.setModifiedBy(user.getId());
+
+        return OtpStatus.SUCCESS;
+    }
+
+    @Transactional
+    public OtpStatus verifyOtpReset(String userId, String otpCode) {
+
+        User user = userRepository.findById(userId);
+
+        if (user == null) {
+            return OtpStatus.NOT_FOUND;
+        }
+
+        OTP otp = getOtpWithPurpose(user, OtpPurpose.PASSWORD_RESET);
+
+        if (otp == null) {
+            return OtpStatus.NOT_FOUND;
+        }
+
+        if (!checkOTP(otp.getOtp(), otpCode)) {
+            return OtpStatus.WRONG_OTP;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
+        otp.setVerified(true);
+        otp.setModifiedAt(now);
+
+        return OtpStatus.SUCCESS;
     }
     @Transactional
     public List<OTP> getAllOTP(){
@@ -70,7 +134,7 @@ public class OTPService {
     }
 
     @Transactional
-    public int updateOTP(UUID id,String purpose,boolean ver,int attempt) throws Exception {
+    public int updateOTP(UUID id, OtpPurpose purpose, boolean ver, int attempt) throws Exception {
 
         OTP otp = OTPRepository.findById(id);
 
@@ -83,7 +147,7 @@ public class OTPService {
 
         otp.setPurpose(purpose);
         otp.setVerified(ver);
-        otp.setCreatedAt(new Date(System.currentTimeMillis()));
+        otp.setCreatedAt(LocalDateTime.now());
         if (attempt>0){
             otp.setAttempts(otp.getAttempts()+1);
         }

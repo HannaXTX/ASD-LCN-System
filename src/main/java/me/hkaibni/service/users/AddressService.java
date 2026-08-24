@@ -4,7 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import me.hkaibni.dto.search.AddressSearchDTO;
-import me.hkaibni.dto.entity_dto.AddressDTO;
+import me.hkaibni.dto.request.AddressDTO;
 import me.hkaibni.model.Address;
 import me.hkaibni.repository.user.AddressRepository;
 import me.hkaibni.repository.user.UserRepository;

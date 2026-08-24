@@ -10,7 +10,7 @@ import java.util.UUID;
 @ApplicationScoped
 public class NewsRepository implements PanacheRepository<News> {
 
-    public News findById(UUID id) {
+    public News findById(String id) {
         return find("id", id).firstResult();
     }
 

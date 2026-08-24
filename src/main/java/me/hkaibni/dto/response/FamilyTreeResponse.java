@@ -2,9 +2,6 @@ package me.hkaibni.dto.response;
 
 import me.hkaibni.model.family.Family;
 
-import java.util.List;
-import java.util.UUID;
-
 public class FamilyTreeResponse {
 
     private Family family;

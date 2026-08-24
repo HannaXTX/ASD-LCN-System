@@ -1,4 +1,4 @@
-package me.hkaibni.model.roles;
+package me.hkaibni.model.roles_types;
 
 import jakarta.persistence.*;
 

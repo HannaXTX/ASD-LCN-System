@@ -83,26 +83,6 @@ public class UserRepository implements PanacheRepository<User> {
             );
         }
 
-//        if (request.getFirstName() != null &&
-//                !request.getFirstName().isBlank()) {
-//
-//            query.append(" and lower(firstName) like :firstName");
-//            params.put(
-//                    "firstName",
-//                    "%" + request.getFirstName().trim().toLowerCase() + "%"
-//            );
-//        }
-//
-//        if (request.getLastName() != null &&
-//                !request.getLastName().isBlank()) {
-//
-//            query.append(" and lower(lastName) like :lastName");
-//            params.put(
-//                    "lastName",
-//                    "%" + request.getLastName().trim().toLowerCase() + "%"
-//            );
-//        }
-
         if (request.getEmail() != null &&
                 !request.getEmail().isBlank()) {
 

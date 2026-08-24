@@ -6,8 +6,8 @@ import jakarta.inject.Inject;
 import me.hkaibni.model.family.FamilyMember;
 import me.hkaibni.model.family.Person;
 import me.hkaibni.model.family.TreeRelationship;
-import me.hkaibni.model.roles.Gender;
-import me.hkaibni.model.roles.RelationshipType;
+import me.hkaibni.model.roles_types.Gender;
+import me.hkaibni.model.roles_types.RelationshipType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +26,8 @@ public class TreeRelationshipRepository
         this.familyRepository = familyRepository;
         this.familyMemberRepository = familyMemberRepository;
     }
+
+
 
     public List<TreeRelationship> ListTreeRelationshipsByFamily(UUID id){
         return this.list("family",id);
@@ -97,6 +99,40 @@ public class TreeRelationshipRepository
             }
 
             if (spouse.getGender() == Gender.FEMALE) {
+
+
+                FamilyMember spouseMember =
+                        familyMemberRepository.findByPersonId(spouse.getId());
+
+                if (spouseMember != null) {
+                    wives.add(spouseMember);
+                }
+            }
+        }
+
+        return wives;
+    }
+
+    public List<FamilyMember> getSpousesMaleById(String id) {
+
+        List<FamilyMember> wives = new ArrayList<>();
+
+        List<TreeRelationship> spousesBothGender = list(
+                "type = ?1 and (personA.id = ?2 or personB.id = ?2)",
+                RelationshipType.SPOUSE_OF,
+                id
+        );
+        for (TreeRelationship spouseRelationship : spousesBothGender) {
+
+            Person spouse;
+
+            if (spouseRelationship.getPersonA().getId().equals(id)) {
+                spouse = spouseRelationship.getPersonB();
+            } else {
+                spouse = spouseRelationship.getPersonA();
+            }
+
+            if (spouse.getGender() == Gender.MALE) {
 
 
                 FamilyMember spouseMember =

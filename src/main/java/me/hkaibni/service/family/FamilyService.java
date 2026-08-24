@@ -3,12 +3,14 @@ package me.hkaibni.service.family;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import me.hkaibni.dto.entity_dto.FamilyDTO;
+import jakarta.ws.rs.core.Response;
+import me.hkaibni.dto.request.FamilyDTO;
 import me.hkaibni.dto.response.FamilyTreeResponse;
 import me.hkaibni.dto.search.FamilySearchDTO;
 import me.hkaibni.model.family.Family;
 import me.hkaibni.repository.family.FamilyMemberRepository;
 import me.hkaibni.repository.family.FamilyRepository;
+import me.hkaibni.utils.ResponseUtil;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,17 +24,7 @@ public class FamilyService {
     FamilyMemberRepository familyMemberRepository;
 
     @Transactional
-    public int createFamily(FamilyDTO dto) {
-
-        if (dto == null) {
-            return 1;
-        }
-
-        if (familyRepository.findByNameAr(dto.getNameAr()) != null &&
-                familyRepository.findByNameEn(dto.getNameEn()) != null) {
-            return 3;
-        }
-
+    public Family createFamily(FamilyDTO dto) {
 
         Family family = new Family();
 
@@ -40,14 +32,18 @@ public class FamilyService {
         family.setNameAr(dto.getNameAr());
         family.setNameEn(dto.getNameEn());
 
-
-
         familyRepository.save(family);
 
-        return 0;
+        return family;
     }
 
-    public Family getFamilyById(UUID id) {
+    public boolean isUnique(FamilyDTO dto){
+        return familyRepository.findByNameAr(dto.getNameAr()) == null ||
+                familyRepository.findByNameEn(dto.getNameEn()) == null;
+    }
+
+    public Family getFamilyById(String id) {
+
         return familyRepository.findFamilyById(id);
     }
 
@@ -61,6 +57,7 @@ public class FamilyService {
 
 
     public List<Family> getAllFamilies() {
+
         return familyRepository.listFamilies();
     }
 
@@ -78,34 +75,27 @@ public class FamilyService {
     }
 
     @Transactional
-    public int updateFamily(UUID id, FamilyDTO dto) {
-
+    public Family updateFamily(String id, FamilyDTO dto) {
         Family family = familyRepository.findFamilyById(id);
-
-        if (family == null) {
-            return 1;
-        }
-
-        Family existingByName =
-                familyRepository.findByNameEn(dto.getNameEn());
-
-        if (existingByName != null &&
-                !existingByName.getId().equals(family.getId())) {
-            return 2;
+        if (family==null) {
+            return null;
         }
 
         family.setNameEn(dto.getNameEn());
         family.setNameAr(dto.getNameAr());
 
-        return 0;
+        return family;
     }
 
     @Transactional
-    public boolean deleteFamilyById(UUID id) {
-        return familyRepository.deleteFamilyById(id)>0;
+    public Family deleteFamilyById(String id) {
+        Family family = familyRepository.findFamilyById(id);
+        familyRepository.deleteFamilyById(id);
+        return family;
+
     }
 
-    public FamilyTreeResponse buildTree(UUID id) {
+    public FamilyTreeResponse buildTree(String id) {
         return familyMemberRepository.buildTree(id);
     }
 }

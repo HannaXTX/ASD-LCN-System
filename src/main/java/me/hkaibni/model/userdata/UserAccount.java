@@ -1,10 +1,9 @@
 package me.hkaibni.model.userdata;
 
 import jakarta.persistence.*;
-import me.hkaibni.model.roles.UserRole;
+import me.hkaibni.model.roles_types.UserRole;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table (name = "user_accounts")

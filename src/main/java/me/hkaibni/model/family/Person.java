@@ -1,7 +1,7 @@
 package me.hkaibni.model.family;
 
 import jakarta.persistence.*;
-import me.hkaibni.model.roles.Gender;
+import me.hkaibni.model.roles_types.Gender;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,6 +33,7 @@ public class Person {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    private String profilePicture;
 
     // AUDIT DATA
     private LocalDateTime createdAt;
@@ -163,5 +164,19 @@ public class Person {
         return fullNameAr;
     }
 
+    public void setFullNameEn(String fullNameEn) {
+        this.fullNameEn = fullNameEn;
+    }
 
+    public void setFullNameAr(String fullNameAr) {
+        this.fullNameAr = fullNameAr;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
 }

@@ -1,28 +1,26 @@
-package me.hkaibni.dto.entity_dto;
-
-import java.util.UUID;
+package me.hkaibni.dto.request;
 
 public class FamilyMemberDTO {
 
-    private UUID family;
+    private String family;
 
-    private UUID person;
+    private String person;
 
     private boolean rootPerson;
 
-    public UUID getFamily() {
+    public String getFamily() {
         return family;
     }
 
-    public void setFamily(UUID family) {
+    public void setFamily(String family) {
         this.family = family;
     }
 
-    public UUID getPerson() {
+    public String getPerson() {
         return person;
     }
 
-    public void setPerson(UUID person) {
+    public void setPerson(String person) {
         this.person = person;
     }
 
