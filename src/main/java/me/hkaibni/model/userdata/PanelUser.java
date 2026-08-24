@@ -14,11 +14,7 @@ public class PanelUser {
     private String id;
 
     @Column(nullable = false, unique = true)
-    private String ssn;
-
-    @ManyToOne
-    @JoinColumn(name = "address_id")
-    private Address address;
+    private String username;
 
     @OneToOne(
             cascade = CascadeType.ALL,
@@ -60,12 +56,12 @@ public class PanelUser {
 
     }
 
-    public String getSsn() {
-        return ssn;
+    public String getUsername() {
+        return username;
     }
 
-    public void setSsn(String SSN) {
-        this.ssn = SSN;
+    public void setUsername(String SSN) {
+        this.username = SSN;
     }
 
 
@@ -117,13 +113,7 @@ public class PanelUser {
         this.email = email;
     }
 
-    public Address getAddress() {
-        return address;
-    }
 
-    public void setAddress(Address address) {
-        this.address = address;
-    }
 
     public String getPhone() {
         return phone;

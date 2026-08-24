@@ -1,4 +1,4 @@
-package me.hkaibni;
+package me.hkaibni.example;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 

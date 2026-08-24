@@ -2,7 +2,7 @@ package me.hkaibni.repository.user;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import me.hkaibni.model.roles.UserRole;
+import me.hkaibni.model.roles_types.UserRole;
 @ApplicationScoped
 public class UserRoleRepository implements PanacheRepository<UserRole> {
 

@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import me.hkaibni.dto.search.AddressSearchDTO;
 import me.hkaibni.dto.response.ApiResponse;
-import me.hkaibni.dto.entity_dto.AddressDTO;
+import me.hkaibni.dto.request.AddressDTO;
 import me.hkaibni.model.Address;
 import me.hkaibni.service.users.AddressService;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -28,14 +28,14 @@ public class AddressController {
 
     @GET
     @Path("/test")
-    @RolesAllowed({"USER"})
+    @RolesAllowed({"USER","ADMIN"})
     public String test() {
         return jwt.getSubject() + " " + jwt.getGroups();
     }
 
 
     @GET
-    @RolesAllowed("USER")
+    @RolesAllowed({"USER","ADMIN"})
     @Produces (MediaType.APPLICATION_JSON)
     public Response getAddresses(){
         return Response.ok(
@@ -49,7 +49,7 @@ public class AddressController {
 
     @Path("/{id}")
     @GET
-    @RolesAllowed("USER")
+    @RolesAllowed({"USER","ADMIN"})
     @Produces (MediaType.APPLICATION_JSON)
     public Response getAddress(@PathParam("id") String id){
 
@@ -66,7 +66,7 @@ public class AddressController {
 
     @Path("/{id}")
     @DELETE
-    @RolesAllowed("USER")
+    @RolesAllowed({"USER","ADMIN"})
     @Produces (MediaType.APPLICATION_JSON)
     public Response deleteAddress(@PathParam("id") String id){
 
@@ -90,7 +90,7 @@ public class AddressController {
         ).build();    }
     @Path("/{id}")
     @PUT
-    @RolesAllowed("USER")
+    @RolesAllowed({"USER","ADMIN"})
     @Consumes (MediaType.APPLICATION_JSON)
     @Produces (MediaType.APPLICATION_JSON)
     public Response updateAddress(AddressDTO dto, @PathParam("id") String id) throws Exception {

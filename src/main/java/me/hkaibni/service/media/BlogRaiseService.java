@@ -8,7 +8,7 @@ import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 
-import me.hkaibni.dto.entity_dto.BlogRaiseDTO;
+import me.hkaibni.dto.request.BlogRaiseDTO;
 import me.hkaibni.model.media.Blog;
 import me.hkaibni.model.media.BlogRaise;
 import me.hkaibni.repository.media.BlogRaiseRepository;

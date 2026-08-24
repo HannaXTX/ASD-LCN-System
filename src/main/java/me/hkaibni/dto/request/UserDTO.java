@@ -1,6 +1,6 @@
-package me.hkaibni.dto.entity_dto;
+package me.hkaibni.dto.request;
 
-import me.hkaibni.model.roles.Gender;
+import me.hkaibni.model.roles_types.Gender;
 
 import java.time.LocalDate;
 
@@ -39,6 +39,70 @@ public class UserDTO {
 
     public String getSsn() {
         return ssn;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setSsn(String ssn) {
+        this.ssn = ssn;
+    }
+
+    public void setFirstNameEn(String firstNameEn) {
+        this.firstNameEn = firstNameEn;
+    }
+
+    public void setFirstNameAr(String firstNameAr) {
+        this.firstNameAr = firstNameAr;
+    }
+
+    public void setMiddleNameAr(String middleNameAr) {
+        this.middleNameAr = middleNameAr;
+    }
+
+    public void setMiddleNameEn(String middleNameEn) {
+        this.middleNameEn = middleNameEn;
+    }
+
+    public void setLastNameAr(String lastNameAr) {
+        this.lastNameAr = lastNameAr;
+    }
+
+    public void setLastNameEn(String lastNameEn) {
+        this.lastNameEn = lastNameEn;
+    }
+
+    public void setFullNameEn(String fullNameEn) {
+        this.fullNameEn = fullNameEn;
+    }
+
+    public void setFullNameAr(String fullNameAr) {
+        this.fullNameAr = fullNameAr;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 
     public String getFirstNameEn() {

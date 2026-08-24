@@ -3,16 +3,15 @@ package me.hkaibni.service.family;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import me.hkaibni.dto.entity_dto.TreeRelationshipDTO;
+import me.hkaibni.dto.request.TreeRelationshipDTO;
 import me.hkaibni.model.family.Family;
 import me.hkaibni.model.family.Person;
 import me.hkaibni.model.family.TreeRelationship;
-import me.hkaibni.model.roles.RelationshipType;
+import me.hkaibni.model.roles_types.RelationshipType;
 import me.hkaibni.repository.family.FamilyMemberRepository;
 import me.hkaibni.repository.family.FamilyRepository;
-import me.hkaibni.repository.family.TreeRelationshipRepository;
 import me.hkaibni.repository.family.PersonRepository;
-import me.hkaibni.service.status.RelationshipCreationStatus;
+import me.hkaibni.repository.family.TreeRelationshipRepository;
 
 import java.util.UUID;
 
@@ -31,88 +30,53 @@ public class TreeRelationshipService {
     @Inject
     TreeRelationshipRepository relationshipRepository;
 
-    @Transactional
-    public RelationshipCreationStatus createRelationship(
-            TreeRelationshipDTO dto
-    ) {
 
-        if (dto == null ||
-                dto.getFamilyId() == null ||
-                dto.getPersonAId() == null ||
-                dto.getPersonBId() == null ||
-                dto.getType() == null) {
+    public Family getFamilyById(String id) {
+        return familyRepository.findById(id);
+    }
 
-            return RelationshipCreationStatus.INVALID_REQUEST;
-        }
 
-        if (dto.getPersonAId().equals(dto.getPersonBId())) {
-            return RelationshipCreationStatus.SELF_RELATIONSHIP;
-        }
+    public Person getPersonById(String id) {
+        return personRepository.findById(id);
+    }
 
-        Family family = familyRepository.findById(dto.getFamilyId());
 
-        if (family == null) {
-            return RelationshipCreationStatus.FAMILY_NOT_FOUND;
-        }
+    public boolean isMember(String familyId, String personId) {
+        return familyMemberRepository.existsByFamilyAndPerson(
+                familyId,
+                personId
+        );
+    }
 
-        Person personA = personRepository.findById(dto.getPersonAId());
 
-        if (personA == null) {
-            return RelationshipCreationStatus.PERSON_A_NOT_FOUND;
-        }
-
-        Person personB = personRepository.findById(dto.getPersonBId());
-
-        if (personB == null) {
-            return RelationshipCreationStatus.PERSON_B_NOT_FOUND;
-        }
-
-        boolean personAIsMember =
-                familyMemberRepository.existsByFamilyAndPerson(
-                        family.getId(),
-                        personA.getId()
-                );
-
-        if (!personAIsMember) {
-            return RelationshipCreationStatus.PERSON_A_NOT_IN_FAMILY;
-        }
-
-        boolean personBIsMember =
-                familyMemberRepository.existsByFamilyAndPerson(
-                        family.getId(),
-                        personB.getId()
-                );
-
-        if (!personBIsMember) {
-            return RelationshipCreationStatus.PERSON_B_NOT_IN_FAMILY;
-        }
-
-        boolean alreadyExists;
+    public boolean relationshipExists(TreeRelationshipDTO dto) {
 
         if (isSymmetric(dto.getType())) {
-            alreadyExists =
-                    relationshipRepository.existsInEitherDirection(
-                            family.getId(),
-                            personA.getId(),
-                            personB.getId(),
-                            dto.getType()
-                    );
-        } else {
-            alreadyExists =
-                    relationshipRepository.existsDirected(
-                            family.getId(),
-                            personA.getId(),
-                            personB.getId(),
-                            dto.getType()
-                    );
+            return relationshipRepository.existsInEitherDirection(
+                    dto.getFamilyId(),
+                    dto.getPersonAId(),
+                    dto.getPersonBId(),
+                    dto.getType()
+            );
         }
 
-        if (alreadyExists) {
-            return RelationshipCreationStatus.ALREADY_EXISTS;
-        }
+        return relationshipRepository.existsDirected(
+                dto.getFamilyId(),
+                dto.getPersonAId(),
+                dto.getPersonBId(),
+                dto.getType()
+        );
+    }
 
-        TreeRelationship relationship =
-                new TreeRelationship();
+
+    @Transactional
+    public TreeRelationship createRelationship(TreeRelationshipDTO dto) {
+
+        Family family = familyRepository.findById(dto.getFamilyId());
+        Person personA = personRepository.findById(dto.getPersonAId());
+        Person personB = personRepository.findById(dto.getPersonBId());
+
+        TreeRelationship relationship = new TreeRelationship();
 
         relationship.setId(UUID.randomUUID().toString());
         relationship.setFamily(family);
@@ -122,16 +86,11 @@ public class TreeRelationshipService {
 
         relationshipRepository.save(relationship);
 
-        return RelationshipCreationStatus.SUCCESS;
+        return relationship;
     }
+
 
     private boolean isSymmetric(RelationshipType type) {
-        return switch (type) {
-            case SPOUSE_OF -> true;
-            default -> false;
-        };
+        return type == RelationshipType.SPOUSE_OF;
     }
-
-
-
 }

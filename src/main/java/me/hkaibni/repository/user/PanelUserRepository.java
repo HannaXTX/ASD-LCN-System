@@ -14,10 +14,10 @@ import java.util.UUID;
 @ApplicationScoped
 public class PanelUserRepository implements PanacheRepository<PanelUser> {
 
-    public PanelUser findBySsn(String ssn) {
-        return find("ssn", ssn).firstResult();
+    public PanelUser findByUsername(String username) {
+        return find("username", username).firstResult();
     }
-    public PanelUser findById(UUID id) {
+    public PanelUser findById(String id) {
         return find("id", id).firstResult();
     }
 
@@ -27,8 +27,11 @@ public class PanelUserRepository implements PanacheRepository<PanelUser> {
     public List<PanelUser> listUserPanels(){
         return this.listAll();
     }
-    public long deleteBySsn(String ssn) {
-        return delete("ssn", ssn);
+    public long deleteByUsername(String username) {
+        return delete("username", username);
+    }
+    public long deleteById(String id) {
+        return delete("id", id);
     }
 
 
@@ -45,7 +48,7 @@ public class PanelUserRepository implements PanacheRepository<PanelUser> {
                     lower(firstName) like :search
                     or lower(lastName) like :search
                     or lower(email) like :search
-                    or lower(ssn) like :search
+                    or lower(username) like :search
                     or lower(phone) like :search
                 )
                 """);
@@ -78,9 +81,9 @@ public class PanelUserRepository implements PanacheRepository<PanelUser> {
         Map<String, Object> params = new HashMap<>();
 
         if (request.getSsn() != null && !request.getSsn().isBlank()) {
-            query.append(" and lower(ssn) like :ssn");
+            query.append(" and lower(username) like :username");
             params.put(
-                    "ssn",
+                    "username",
                     "%" + request.getSsn().trim().toLowerCase() + "%"
             );
         }
@@ -125,15 +128,6 @@ public class PanelUserRepository implements PanacheRepository<PanelUser> {
             );
         }
 
-        if (request.getAddressId() != null &&
-                !request.getAddressId().isBlank()) {
-
-            query.append(" and address.id = :addressId");
-            params.put(
-                    "addressId",
-                    request.getAddressId().trim()
-            );
-        }
 
         var panacheQuery = find(query.toString(), params);
 

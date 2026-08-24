@@ -5,10 +5,12 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import me.hkaibni.dto.entity_dto.AttachmentUploadDTO;
+import me.hkaibni.dto.request.AttachmentUploadDTO;
 import me.hkaibni.model.media.Attachment;
 import me.hkaibni.repository.media.AttachmentRepository;
 import me.hkaibni.service.media.AttachmentService;
+
+import java.util.List;
 
 @Path("/attachments")
 @Produces(MediaType.APPLICATION_JSON)
@@ -53,6 +55,17 @@ public class AttachmentController {
 
         return Response.status(Response.Status.CREATED)
                 .entity(attachmentService.upload(dto))
+                .build();
+    }
+
+    @POST
+    @Path("/multi-upload")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response uploadMultipleFile(
+            List<AttachmentUploadDTO> dto
+    ) {
+        return Response.status(Response.Status.CREATED)
+                .entity(attachmentService.uploadMulti(dto))
                 .build();
     }
 

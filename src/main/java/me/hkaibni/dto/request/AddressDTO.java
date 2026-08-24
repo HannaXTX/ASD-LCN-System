@@ -1,4 +1,4 @@
-package me.hkaibni.dto.entity_dto;
+package me.hkaibni.dto.request;
 
 public class AddressDTO {
 

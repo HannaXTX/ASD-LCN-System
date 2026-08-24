@@ -3,16 +3,14 @@ package me.hkaibni.service.users;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import me.hkaibni.dto.entity_dto.UserDTO;
+import me.hkaibni.dto.request.PanelUserCreateDTO;
 import me.hkaibni.dto.search.UserSearchDTO;
 import me.hkaibni.model.userdata.PanelUserAccount;
-import me.hkaibni.model.Address;
 import me.hkaibni.model.userdata.PanelUser;
-import me.hkaibni.repository.user.AddressRepository;
 import me.hkaibni.repository.user.PanelUserAccountRepository;
 import me.hkaibni.repository.user.PanelUserRepository;
 import me.hkaibni.repository.user.UserRoleRepository;
-import me.hkaibni.security.AESUtil;
+import me.hkaibni.security.AESUtils;
 import me.hkaibni.security.PBKDF2;
 import me.hkaibni.service.status.UpdateStatus;
 
@@ -26,25 +24,22 @@ public class PanelUserService {
     @Inject
     PanelUserRepository panelUserRepository;
     @Inject
-    AddressRepository addressRepository;
-    @Inject
     PanelUserAccountRepository userAccountRepository;
     @Inject
     UserRoleRepository userRoleRepository;
-    @Inject
-    OTPService otpService;
+
 
 
     @Transactional
-    public boolean createUser(UserDTO dto) throws Exception {
+    public boolean createUser(PanelUserCreateDTO dto) throws Exception {
 
-        if (panelUserRepository.findBySsn(dto.getSsn()) != null) {
+        if (panelUserRepository.findByUsername(dto.getUsername()) != null) {
             return false;
         }
 
         byte[] salt = PBKDF2.getSalt();
 
-        String decryptedPassword = AESUtil.decrypt(dto.getPassword());
+        String decryptedPassword = AESUtils.decryptData(dto.getPassword());
         LocalDateTime now = LocalDateTime.now();
 
         PanelUser user = new PanelUser();
@@ -52,9 +47,7 @@ public class PanelUserService {
 
         user.setId(UUID.randomUUID().toString());
 
-        user.setSsn(dto.getSsn());
-        Address address = addressRepository.findById(dto.getAddressId());
-        user.setAddress(address);
+        user.setUsername(dto.getUsername());
         user.setPhone(dto.getPhone());
         user.setEmail(dto.getEmail());
         user.setCreatedAt(now);
@@ -82,11 +75,10 @@ public class PanelUserService {
         return true;
     }
 
-
-    public PanelUser getUserPanel(String SSN) {
-        return panelUserRepository.findBySsn(SSN);
+    public PanelUser getUserPanelByUsername(String username) {
+        return panelUserRepository.findByUsername(username);
     }
-    public PanelUser getUserPanel(UUID uuid) {
+    public PanelUser getUserPanelById(String uuid) {
         return panelUserRepository.findById(uuid);
     }
 
@@ -96,7 +88,7 @@ public class PanelUserService {
     }
 
     @Transactional
-    public UpdateStatus updateUserPanel(UUID id, UserDTO dto) throws Exception {
+    public UpdateStatus updateUserPanel(String id, PanelUserCreateDTO dto) throws Exception {
 
         LocalDateTime now = LocalDateTime.now();
 
@@ -109,19 +101,17 @@ public class PanelUserService {
 //        if (userRepository.findBySSN(dto.getSSN()) != null && !SSN.equals(dto.getSSN())) {
 //            return 2;
 //        }
-        if (panelUserRepository.findBySsn(dto.getSsn()) != null) {
+        if (panelUserRepository.findByUsername(dto.getUsername()) != null) {
             return UpdateStatus.ALREADY_EXISTS;
         }
-        user.setSsn(dto.getSsn());
-        Address address = addressRepository.findById(dto.getAddressId());
-        user.setAddress(address);
+        user.setUsername(dto.getUsername());
         user.setPhone(dto.getPhone());
         user.setEmail(dto.getEmail());
 
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
 
             byte[] salt = PBKDF2.getSalt();
-            user.getAccount().setPassword(PBKDF2.hash(AESUtil.decrypt(dto.getPassword()), salt));
+            user.getAccount().setPassword(PBKDF2.hash(AESUtils.decryptData(dto.getPassword()), salt));
             user.getAccount().setSalt(salt);
         }
 
@@ -130,13 +120,19 @@ public class PanelUserService {
     }
 
     @Transactional
-    public boolean deleteUserPanel(String SSN) {
-        return panelUserRepository.deleteBySsn(SSN) > 0;
+    public boolean deleteUserPanelByUsername(String username) {
+        return panelUserRepository.deleteByUsername(username) > 0;
     }
 
     @Transactional
+    public boolean deleteUserPanelById(String id) {
+        return panelUserRepository.deleteById(id) > 0;
+    }
+
+
+    @Transactional
     public int approve(String uuid) {
-        getUserPanel(uuid).getAccount().setApproved(1);
+        getUserPanelById(uuid).getAccount().setApproved(1);
         return 0;
     }
 

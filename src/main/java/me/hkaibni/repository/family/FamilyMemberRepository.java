@@ -11,6 +11,7 @@ import me.hkaibni.dto.response.FamilyUnitNode;
 import me.hkaibni.model.family.Family;
 import me.hkaibni.model.family.FamilyMember;
 import me.hkaibni.model.family.Person;
+import me.hkaibni.model.roles_types.Gender;
 import me.hkaibni.service.family.FamilyMemberService;
 
 import java.util.*;
@@ -32,13 +33,13 @@ public class FamilyMemberRepository implements PanacheRepository<FamilyMember> {
     FamilyMemberRepository familyMemberRepository;
 
 
-    public FamilyMember findById(UUID id) {
+    public FamilyMember findById(String id) {
         return find("id", id).firstResult();
     }
     public FamilyMember findByPersonId(String id){
         return find("person.id",id).firstResult();
     }
-    public FamilyMember findByFamilyId(UUID id){
+    public FamilyMember findByFamilyId(String id){
         return find("family",id).firstResult();
     }
 
@@ -62,7 +63,7 @@ public class FamilyMemberRepository implements PanacheRepository<FamilyMember> {
     }
 
 
-    public long deleteFamilyMembersById(UUID id) {
+    public long deleteFamilyMembersById(String id) {
         return delete("id", id);
     }
 
@@ -77,11 +78,11 @@ public class FamilyMemberRepository implements PanacheRepository<FamilyMember> {
         ) > 0;
     }
 
-    public FamilyMember getRootPersonByFamily(UUID id){
+    public FamilyMember getRootPersonByFamily(String id){
         return find("rootPerson = ?1 and family.id=?2",true,id).firstResult();
     }
 
-//    public FamilyMember getSpousesByPerson(UUID id){
+//    public FamilyMember getSpousesByPerson(String id){
 //        return ;
 //    }
 
@@ -92,15 +93,14 @@ public class FamilyMemberRepository implements PanacheRepository<FamilyMember> {
         return personRelationshipRepository.getChildrenById(id);
     }
 
-    public FamilyTreeResponse buildTree(UUID familyId) {
+    public FamilyTreeResponse buildTree(String familyId) {
 
         FamilyMember rootPerson = getRootPersonByFamily(familyId);
 
-        if (rootPerson == null) {
-            throw new NotFoundException();
-        }
-
         FamilyTreeResponse familyTreeResponse = new FamilyTreeResponse();
+        if (rootPerson == null) {
+            return familyTreeResponse;
+        }
         familyTreeResponse.setFamily(rootPerson.getFamily());
 
         FamilyNode rootNode = buildFamilyNode(
@@ -129,10 +129,13 @@ public class FamilyMemberRepository implements PanacheRepository<FamilyMember> {
             currentNode.setFamilyUnits(new ArrayList<>());
             return currentNode;
         }
-
-        List<FamilyMember> spouseMembers =
-                personRelationshipRepository.getSpousesFemaleById(currentPerson.getId());
-
+        List<FamilyMember> spouseMembers;
+        if (currentPerson.getGender() == Gender.FEMALE) {
+            spouseMembers = personRelationshipRepository.getSpousesMaleById(currentPerson.getId());
+        }
+        else {
+            spouseMembers = personRelationshipRepository.getSpousesFemaleById(currentPerson.getId());
+        }
         List<FamilyMember> childMembers =
                 personRelationshipRepository.getChildrenById(currentPerson.getId());
 

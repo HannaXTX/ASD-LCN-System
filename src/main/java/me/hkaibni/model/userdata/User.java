@@ -4,7 +4,6 @@ import me.hkaibni.model.Address;
 import me.hkaibni.model.family.Person;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 
 @Entity
@@ -52,7 +51,6 @@ public class User {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private String modifiedBy;
-    private String createdBy;
 
     public UserAccount getUserAccount() {
         return userAccount;
@@ -95,8 +93,8 @@ public class User {
         return ssn;
     }
 
-    public void setSsn(String SSN) {
-        this.ssn = SSN;
+    public void setSsn(String ssn) {
+        this.ssn = ssn;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -146,14 +144,6 @@ public class User {
 
     public void setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
     }
 
     public String getId() {

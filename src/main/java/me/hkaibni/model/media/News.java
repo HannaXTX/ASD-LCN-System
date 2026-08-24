@@ -16,7 +16,6 @@ public class News {
     @Column(nullable = false, length = 200)
     private String title;
 
-    @Lob
     @Column(nullable = false)
     private String content;
 
@@ -28,7 +27,8 @@ public class News {
 
     private String createdBy;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "news_id")
     private List<Attachment> attachments;
 
     public String getId() {

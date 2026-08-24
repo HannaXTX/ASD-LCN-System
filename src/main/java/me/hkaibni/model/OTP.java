@@ -1,10 +1,10 @@
 package me.hkaibni.model;
 
 import jakarta.persistence.*;
+import me.hkaibni.model.roles_types.OtpPurpose;
 import me.hkaibni.model.userdata.User;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 public class OTP {
@@ -17,7 +17,8 @@ public class OTP {
 
     private String Otp;
 
-    private String purpose;
+    @Enumerated(EnumType.STRING)
+    private OtpPurpose purpose;
 
     private Integer attempts;
 
@@ -26,8 +27,8 @@ public class OTP {
 
 
     // AUDIT DATA
-    private Date createdAt;
-    private Date expiresAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime expiresAt;
     private LocalDateTime modifiedAt;
     private String createdBy;
 
@@ -67,15 +68,15 @@ public class OTP {
         return Otp;
     }
 
-    public void setOtp(String hashedOtp) {
-        this.Otp = hashedOtp;
+    public void setOtp(String Otp) {
+        this.Otp = Otp;
     }
 
-    public String getPurpose() {
+    public OtpPurpose getPurpose() {
         return purpose;
     }
 
-    public void setPurpose(String purpose) {
+    public void setPurpose(OtpPurpose purpose) {
         this.purpose = purpose;
     }
 
@@ -95,19 +96,19 @@ public class OTP {
         this.verified = verified;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getExpiresAt() {
+    public LocalDateTime getExpiresAt() {
         return expiresAt;
     }
 
-    public void setExpiresAt(Date expiresAt) {
+    public void setExpiresAt(LocalDateTime expiresAt) {
         this.expiresAt = expiresAt;
     }
 }

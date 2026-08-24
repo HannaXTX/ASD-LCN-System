@@ -3,7 +3,8 @@ package me.hkaibni.service.users;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import me.hkaibni.dto.entity_dto.UserDTO;
+import me.hkaibni.dto.request.UserDTO;
+import me.hkaibni.dto.request.UserUpdateDTO;
 import me.hkaibni.dto.search.UserSearchDTO;
 import me.hkaibni.model.userdata.UserAccount;
 import me.hkaibni.model.Address;
@@ -14,7 +15,7 @@ import me.hkaibni.repository.user.AddressRepository;
 import me.hkaibni.repository.user.UserAccountRepository;
 import me.hkaibni.repository.user.UserRepository;
 import me.hkaibni.repository.user.UserRoleRepository;
-import me.hkaibni.security.AESUtil;
+import me.hkaibni.security.AESUtils;
 import me.hkaibni.security.PBKDF2;
 import me.hkaibni.service.status.UpdateStatus;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -45,21 +46,22 @@ public class UserService {
 
 
     @Transactional
-    public boolean createUser(UserDTO dto) throws Exception {
+    public User createUser(UserDTO dto) throws Exception {
 
         String ssn = dto.getSsn();
+
         if (ssn == null || ssn.isBlank()) {
             throw new IllegalArgumentException("SSN is required");
         }
 
         if (userRepository.findBySSN(dto.getSsn()) != null) {
-            return false;
+            return null;
         }
 
 
         byte[] salt = PBKDF2.getSalt();
 
-        String decryptedPassword = AESUtil.decrypt(dto.getPassword());
+        String decryptedPassword = AESUtils.decryptData(dto.getPassword());
         LocalDateTime now = LocalDateTime.now();
 
         User user = new User();
@@ -97,7 +99,7 @@ public class UserService {
         userAccount.setVerified(0);
         userAccount.setApproved(0);
 
-        userAccount.setUserType(userRoleRepository.findByPrivilege("BASIC"));
+        userAccount.setUserType(userRoleRepository.findByPrivilege("USER"));
 
         user.setAccount(userAccount);
 
@@ -107,7 +109,7 @@ public class UserService {
         person.setCreatedBy(user.getId());
 
 
-        return true;
+        return user;
     }
 
 
@@ -124,36 +126,163 @@ public class UserService {
     }
 
     @Transactional
-    public UpdateStatus updateUser(String id, UserDTO dto) throws Exception {
-
-        LocalDateTime now = LocalDateTime.now();
-
+    public UpdateStatus updateUser(String id, UserUpdateDTO dto) throws Exception {
 
         User user = userRepository.findById(id);
 
         if (user == null) {
             return UpdateStatus.NOT_FOUND;
         }
-        if (userRepository.findBySSN(dto.getSsn()) != null) {
-            return UpdateStatus.ALREADY_EXISTS;
+
+        LocalDateTime now = LocalDateTime.now();
+        String modifiedBy = token.getSubject();
+
+        boolean userChanged = false;
+        boolean personChanged = false;
+        boolean accountChanged = false;
+
+//        // SSN
+//        if (dto.getSsn() != null
+//                && !dto.getSsn().isBlank()
+//                && !dto.getSsn().equals(user.getSsn())) {
+//
+//            User existingUser = userRepository.findBySSN(dto.getSsn());
+//
+//            if (existingUser != null && !existingUser.getId().equals(user.getId())) {
+//                return UpdateStatus.ALREADY_EXISTS;
+//            }
+//
+//            user.setSsn(dto.getSsn());
+//            userChanged = true;
+//        }
+
+        // Phone
+        if (dto.getPhone() != null
+                && !dto.getPhone().equals(user.getPhone())) {
+
+            user.setPhone(dto.getPhone());
+            userChanged = true;
         }
-        user.setSsn(dto.getSsn());
-        Address address = addressRepository.findById(dto.getAddressId());
-        user.setAddress(address);
-        user.setPhone(dto.getPhone());
-        user.setEmail(dto.getEmail());
 
+        // Email
+        if (dto.getEmail() != null
+                && !dto.getEmail().equals(user.getEmail())) {
 
-
-        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-
-            byte[] salt = PBKDF2.getSalt();
-            user.getAccount().setPassword(PBKDF2.hash(AESUtil.decrypt(dto.getPassword()), salt));
-            user.getAccount().setSalt(salt);
+            user.setEmail(dto.getEmail());
+            userChanged = true;
         }
 
-        user.setModifiedAt(now);
-        user.setModifiedBy(token.getSubject());
+        // Address
+//        if (dto.getAddressId() != null
+//                && !dto.getAddressId().isBlank()) {
+//
+//            Address address = addressRepository.findByCode(dto.getAddressId());
+//
+//            if (address == null) {
+//                throw new IllegalArgumentException("Invalid address");
+//            }
+//
+//            if (user.getAddress() == null
+//                    || !address.getId().equals(user.getAddress().getId())) {
+//
+//                user.setAddress(address);
+//                userChanged = true;
+//            }
+//        }
+
+
+        Person person = user.getPerson();
+
+        if (person != null) {
+
+            if (dto.getFirstNameEn() != null
+                    && !dto.getFirstNameEn().equals(person.getFirstNameEn())) {
+
+                person.setFirstNameEn(dto.getFirstNameEn());
+                personChanged = true;
+            }
+            if (dto.getFirstNameAr() != null
+                    && !dto.getFirstNameAr().equals(person.getFirstNameAr())) {
+
+                person.setFirstNameAr(dto.getFirstNameAr());
+                personChanged = true;
+            }
+            if (dto.getMiddleNameAr() != null
+                    && !dto.getMiddleNameAr().equals(person.getMiddleNameAr())) {
+
+                person.setMiddleNameAr(dto.getMiddleNameAr());
+                personChanged = true;
+            }
+
+            if (dto.getMiddleNameEn() != null
+                    && !dto.getMiddleNameEn().equals(person.getMiddleNameEn())) {
+
+                person.setMiddleNameEn(dto.getMiddleNameEn());
+                personChanged = true;
+            }
+
+            if (dto.getLastNameAr() != null
+                    && !dto.getLastNameAr().equals(person.getLastNameAr())) {
+
+                person.setLastNameAr(dto.getLastNameAr());
+                personChanged = true;
+            }
+
+            if (dto.getLastNameEn() != null
+                    && !dto.getLastNameEn().equals(person.getLastNameEn())) {
+
+                person.setLastNameEn(dto.getLastNameEn());
+                personChanged = true;
+            }
+
+            if (dto.getDateOfBirth() != null
+                    && !dto.getDateOfBirth().equals(person.getDateOfBirth())) {
+
+                person.setDateOfBirth(dto.getDateOfBirth());
+                personChanged = true;
+            }
+
+            if (dto.getGender() != null
+                    && !dto.getGender().equals(person.getGender())) {
+
+                person.setGender(dto.getGender());
+                personChanged = true;
+            }
+        }
+
+        UserAccount account = user.getAccount();
+
+//        if (dto.getPassword() != null
+//                && !dto.getPassword().isBlank()) {
+//
+//            String decryptedPassword = AESUtil.decrypt(dto.getPassword());
+//
+//            byte[] salt = PBKDF2.getSalt();
+//
+//            account.setPassword(
+//                    PBKDF2.hash(decryptedPassword, salt)
+//            );
+//
+//            account.setSalt(salt);
+//
+//            accountChanged = true;
+//        }
+
+
+        if (userChanged) {
+            user.setModifiedAt(now);
+            user.setModifiedBy(modifiedBy);
+        }
+
+        if (personChanged) {
+            person.setModifiedAt(now);
+            person.setModifiedBy(modifiedBy);
+        }
+
+        if (accountChanged) {
+            account.setModifiedAt(now);
+            account.setModifiedBy(modifiedBy);
+        }
 
         return UpdateStatus.SUCCESS;
     }
@@ -165,9 +294,12 @@ public class UserService {
 
     @Transactional
     public int approve(String uuid) {
-        if (getUserById(uuid)==null)
+        User user=getUserById(uuid);
+        if (user==null)
             return 1;
-        getUserById(uuid).getAccount().setApproved(1);
+        user.getAccount().setApproved(1);
+        user.getAccount().setModifiedAt(LocalDateTime.now());
+        user.getAccount().setModifiedBy(token.getSubject());
         return 0;
     }
 
@@ -186,6 +318,11 @@ public class UserService {
     //        getUser(ssn).setApproved(1);
     //        return 0;
     //    }
-
-
+    @Transactional
+    public Person updateProfilePicture(User us, String attachmentId){
+        User user = userRepository.findById(us.getId());
+        Person person = user.getPerson();
+        person.setProfilePicture(attachmentId);
+        return person;
+    }
 }

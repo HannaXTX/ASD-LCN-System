@@ -7,15 +7,16 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import me.hkaibni.dto.response.ApiResponse;
-import me.hkaibni.dto.entity_dto.FamilyDTO;
+import me.hkaibni.dto.request.FamilyDTO;
 import me.hkaibni.dto.response.FamilyTreeResponse;
 import me.hkaibni.dto.search.FamilySearchDTO;
 import me.hkaibni.model.family.Family;
+import me.hkaibni.service.family.FamilyMemberService;
 import me.hkaibni.service.family.FamilyService;
+import me.hkaibni.utils.ResponseUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Path("/families")
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,21 +25,16 @@ public class FamilyController {
 
     @Inject
     FamilyService familyServ;
+    @Inject
+    FamilyMemberService familyMemberService;
 
     @GET
 //    @RolesAllowed("ADMIN")
     public Response getAllFamilies() {
-
         List<Family> families = familyServ.getAllFamilies();
-
-        return Response.ok(
-                new ApiResponse(
-                        200,
-                        "Families retrieved successfully",
-                        families,
-                        LocalDateTime.now()
-                )
-        ).build();
+        if (families==null)
+            return ResponseUtil.notFound("No Families Found");
+        return ResponseUtil.ok("Families Retrieved Successfully",families);
     }
 
 
@@ -46,123 +42,38 @@ public class FamilyController {
     @RolesAllowed("ADMIN")
     public Response createFamily(FamilyDTO dto) {
 
-        int operation = familyServ.createFamily(dto);
-
-        if (operation == 0) {
-            Family family = familyServ.getFamilyByNameEn(dto.getNameEn());
-
-            return Response.status(Response.Status.CREATED)
-                    .entity(
-                            new ApiResponse(
-                                    201,
-                                    "Family created successfully",
-                                    family,
-                                    LocalDateTime.now()
-                            )
-                    )
-                    .build();
+        if (dto == null || (dto.getNameEn() == null || dto.getNameEn().isEmpty())) {
+            return ResponseUtil.notFound("Family data is missing");
+        }
+        if (!familyServ.isUnique(dto)) {
+            return ResponseUtil.conflict("A family with with these names already exists");
         }
 
-        if (operation == 1) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(
-                            new ApiResponse(
-                                    400,
-                                    "Family data is required",
-                                    null,
-                                    LocalDateTime.now()
-                            )
-                    )
-                    .build();
-        }
-
-        if (operation == 2) {
-            return Response.status(Response.Status.CONFLICT)
-                    .entity(
-                            new ApiResponse(
-                                    409,
-                                    "A family with this SSN already exists",
-                                    null,
-                                    LocalDateTime.now()
-                            )
-                    )
-                    .build();
-        }
-
-        return Response.status(Response.Status.CONFLICT)
-                .entity(
-                        new ApiResponse(
-                                409,
-                                "A family with this name already exists",
-                                null,
-                                LocalDateTime.now()
-                        )
-                )
-                .build();
+        return ResponseUtil.created("Family created successfully",familyServ.createFamily(dto));
     }
 
-    
+
     @GET
     @Path("/id/{id}")
     @RolesAllowed({"ADMIN", "USER"})
-    public Response getFamilyById(@PathParam("id") UUID id) {
-
+    public Response getFamilyById(@PathParam("id") String id) {
         Family family = familyServ.getFamilyById(id);
-
-        if (family == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(
-                            new ApiResponse(
-                                    404,
-                                    "Family not found",
-                                    null,
-                                    LocalDateTime.now()
-                            )
-                    )
-                    .build();
-        }
-
-        return Response.ok(
-                new ApiResponse(
-                        200,
-                        "Family retrieved successfully",
-                        family,
-                        LocalDateTime.now()
-                )
-        ).build();
+        if (family == null)
+            return ResponseUtil.notFound("Family not found");
+        return ResponseUtil.ok("Family retrieved successfully",family);
     }
 
 
     @GET
     @Path("/name/{familyName}")
     @RolesAllowed({"ADMIN", "USER"})
-    public Response getFamilyByName(
-            @PathParam("familyName") String familyName
-    ) {
+    public Response getFamilyByName(@PathParam("familyName") String familyName) {
 
         Family family = familyServ.getFamilyByNameEn(familyName);
+        if (family == null)
+            return ResponseUtil.notFound("Family not found");
+        return ResponseUtil.ok("Family Retrieved Successfully",family);
 
-        if (family == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(
-                            new ApiResponse(
-                                    404,
-                                    "Family not found",
-                                    null,
-                                    LocalDateTime.now()
-                            )
-                    )
-                    .build();
-        }
-
-        return Response.ok(
-                new ApiResponse(
-                        200,
-                        "Family retrieved successfully",
-                        family,
-                        LocalDateTime.now()
-                )
-        ).build();
     }
 
     @GET
@@ -177,137 +88,53 @@ public class FamilyController {
         else {
             results = familyServ.searchFamilies(dto);
         }
-        return Response.ok(
-                new ApiResponse(
-                        200,
-                        results.isEmpty()
-                                ? "No users found"
-                                : "User search completed successfully",
-                        results,
-                        LocalDateTime.now()
-                )
-        ).build();
+
+        return ResponseUtil.ok(results.isEmpty()
+                ? "No users found"
+                : "User search completed successfully",results);
+
     }
 
     @PUT
     @Path("/{id}")
     @RolesAllowed("ADMIN")
     public Response updateFamily(
-            @PathParam("id") UUID id,
+            @PathParam("id") String id,
             FamilyDTO dto
     ) {
+        if (!familyServ.isUnique(dto))
+            return ResponseUtil.conflict("Family name already exists");
+        Family updatedFamily = familyServ.updateFamily(id, dto);
+        if (updatedFamily == null)
+            return ResponseUtil.notFound("Family not found");
 
-        int operation = familyServ.updateFamily(id, dto);
+       return ResponseUtil.ok("Family updated successfully",updatedFamily);
 
-        if (operation == 0) {
-            return Response.ok(
-                    new ApiResponse(
-                            200,
-                            "Family updated successfully",
-                            familyServ.getFamilyById(id),
-                            LocalDateTime.now()
-                    )
-            ).build();
-        }
-
-        if (operation == 1) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(
-                            new ApiResponse(
-                                    404,
-                                    "Family not found",
-                                    null,
-                                    LocalDateTime.now()
-                            )
-                    )
-                    .build();
-        }
-
-        if (operation == 2) {
-            return Response.status(Response.Status.CONFLICT)
-                    .entity(
-                            new ApiResponse(
-                                    409,
-                                    "Family name already exists",
-                                    null,
-                                    LocalDateTime.now()
-                            )
-                    )
-                    .build();
-        }
-
-        return Response.status(Response.Status.CONFLICT)
-                .entity(
-                        new ApiResponse(
-                                409,
-                                "Family name already exists",
-                                null,
-                                LocalDateTime.now()
-                        )
-                )
-                .build();
     }
 
     @DELETE
     @Path("/id/{id}")
     @RolesAllowed("ADMIN")
-    public Response deleteFamilyById(
-            @PathParam("id") UUID id
-    ) {
+    public Response deleteFamilyById(@PathParam("id") String id) {
 
-        if (!familyServ.deleteFamilyById(id)) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(
-                            new ApiResponse(
-                                    404,
-                                    "Family not found",
-                                    null,
-                                    LocalDateTime.now()
-                            )
-                    )
-                    .build();
-        }
+        Family family = familyServ.getFamilyById(id);
+        if (family == null)
+            return ResponseUtil.notFound("Family not found");
 
-        return Response.ok(
-                new ApiResponse(
-                        200,
-                        "Family deleted successfully",
-                        null,
-                        LocalDateTime.now()
-                )
-        ).build();
+        return ResponseUtil.ok("Family deleted successfully",
+                familyServ.deleteFamilyById(id));
     }
+
+
     @GET
     @Path("/{id}/tree")
     @PermitAll
-    public Response getFamilyTree(@PathParam("id") UUID id) {
-
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getFamilyTree(@PathParam("id") String id) {
         Family family = familyServ.getFamilyById(id);
-
-        if (family == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(
-                            new ApiResponse(
-                                    404,
-                                    "Family not found",
-                                    null,
-                                    LocalDateTime.now()
-                            )
-                    )
-                    .build();
-        }
-
-        FamilyTreeResponse familyTree =
-                familyServ.buildTree(id);
-
-        return Response.ok(
-                new ApiResponse(
-                        200,
-                        "Family tree retrieved successfully",
-                        familyTree,
-                        LocalDateTime.now()
-                )
-        ).build();
+        if (family == null)
+            return ResponseUtil.notFound("Family not found");
+        return ResponseUtil.ok("Family tree retrieved successfully",familyServ.buildTree(id));
     }
 
 }

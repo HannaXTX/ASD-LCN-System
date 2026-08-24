@@ -1,4 +1,4 @@
-package me.hkaibni.dto.entity_dto;
+package me.hkaibni.dto.request;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -7,7 +7,6 @@ public class NewsDTO {
 
     private String title;
     private String content;
-    private LocalDateTime publishedAt;
     private List<String> attachmentIds;
 
     public String getTitle() {
@@ -26,13 +25,7 @@ public class NewsDTO {
         this.content = content;
     }
 
-    public LocalDateTime getPublishedAt() {
-        return publishedAt;
-    }
 
-    public void setPublishedAt(LocalDateTime publishedAt) {
-        this.publishedAt = publishedAt;
-    }
 
     public List<String> getAttachmentIds() {
         return attachmentIds;

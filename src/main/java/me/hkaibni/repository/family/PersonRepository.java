@@ -5,29 +5,30 @@ import jakarta.enterprise.context.ApplicationScoped;
 import me.hkaibni.model.family.Person;
 
 import java.util.List;
-import java.util.UUID;
 
 @ApplicationScoped
 public class PersonRepository implements PanacheRepository<Person> {
 
-    public Person findByFirstName(String firstname) {
-        return find("firstname", firstname).firstResult();
+    public List<Person> findByFirstName(String firstname) {
+        return list("firstname", firstname);
     }
-    public Person findByLastName(String lastname) {
-        return find("lastname", lastname).firstResult();
+    public List<Person> findByLastName(String lastname) {
+        return list("lastname", lastname);
     }
 
-    public Person findById(UUID id) {
+    public Person findById(String id) {
         return find("id", id).firstResult();
     }
 
     public void save(Person person) {
         persist(person);
     }
+
     public List<Person> ListPersons(){
         return this.listAll();
     }
-    public long deleteById(UUID id) {
+
+    public long deleteById(String id) {
         return delete("id", id);
     }
 

@@ -15,7 +15,6 @@ public class Blog {
     @Column(nullable = false, length = 200)
     private String title;
 
-    @Lob
     @Column(nullable = false)
     private String content;
 
@@ -28,7 +27,8 @@ public class Blog {
 
     private String createdBy;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "blogs_id")
     private List<Attachment> attachments;
 
     public String getId() {

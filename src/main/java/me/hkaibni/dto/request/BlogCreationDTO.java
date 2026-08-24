@@ -1,12 +1,10 @@
-package me.hkaibni.dto.entity_dto;
+package me.hkaibni.dto.request;
 
 import jakarta.persistence.*;
-import me.hkaibni.model.media.Attachment;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-public class BlogDTO {
+public class BlogCreationDTO {
 
 
     @Column(nullable = false, length = 200)
@@ -20,10 +18,6 @@ public class BlogDTO {
 
     @OneToMany
     private List<String> attachmentIds;
-
-    private long raiseCount;
-
-
 
     public String getTitle() {
         return title;
@@ -39,5 +33,23 @@ public class BlogDTO {
 
     public List<String> getAttachmentIds() {
         return attachmentIds;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public void setAttachmentIds(List<String> attachmentIds) {
+        this.attachmentIds = attachmentIds;
+    }
+
+
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
