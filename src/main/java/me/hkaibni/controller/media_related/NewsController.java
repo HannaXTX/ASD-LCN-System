@@ -8,12 +8,15 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import me.hkaibni.dto.request.NewsDTO;
 import me.hkaibni.dto.response.ApiResponse;
+import me.hkaibni.dto.search.BlogSearchDTO;
+import me.hkaibni.dto.search.NewsSearchDTO;
 import me.hkaibni.model.media.Blog;
 import me.hkaibni.model.media.News;
 import me.hkaibni.service.media.NewsService;
 import me.hkaibni.utils.ResponseUtil;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Path("/news")
 @Produces(MediaType.APPLICATION_JSON)
@@ -79,25 +82,24 @@ public class NewsController {
     }
 
 
+    @GET
+    @Path("/search")
+    @RolesAllowed("ADMIN")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchNews(NewsSearchDTO dto) {
+        List<News> results;
+        if (dto.hasNoCriteria()) {
+            results = newsService.searchNews(dto.getValue(),dto.getPage(),dto.getPageSize());
+        }
+        else {
+            results = newsService.searchNews(dto);
+        }
 
-//    @Path("/attached")
-//    @GET
-//    @PermitAll
-//    public Response attachFiles(NewsDTO dto) {
-//
-//        return Response
-//                .status(Response.Status.CREATED)
-//                .entity(
-//                        new ApiResponse(
-//                                201,
-//                                "News created successfully",
-//                                newsService.createNews(dto),
-//                                LocalDateTime.now()
-//                        )
-//                )
-//                .build();
-//    }
+        return ResponseUtil.ok(results.isEmpty()
+                ? "No News found"
+                : "News search completed successfully",results);
 
+    }
 
 
 }

@@ -7,12 +7,16 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import me.hkaibni.dto.request.BlogCreationDTO;
 import me.hkaibni.dto.response.ApiResponse;
+import me.hkaibni.dto.search.AttachmentSearchDTO;
+import me.hkaibni.dto.search.BlogSearchDTO;
+import me.hkaibni.model.media.Attachment;
 import me.hkaibni.model.media.Blog;
 import me.hkaibni.model.media.News;
 import me.hkaibni.service.media.BlogService;
 import me.hkaibni.utils.ResponseUtil;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Path("/blogs")
 @Produces(MediaType.APPLICATION_JSON)
@@ -79,5 +83,25 @@ public class BlogController {
         blogService.deleteBlog(id);
 
         return ResponseUtil.ok("Blog Deleted Successfully",null);
+    }
+
+
+    @GET
+    @Path("/search")
+    @RolesAllowed("ADMIN")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchBlogs(BlogSearchDTO dto) {
+        List<Blog> results;
+        if (dto.hasNoCriteria()) {
+            results = blogService.searchBlogs(dto.getValue(),dto.getPage(),dto.getPageSize());
+        }
+        else {
+            results = blogService.searchBlogs(dto);
+        }
+
+        return ResponseUtil.ok(results.isEmpty()
+                ? "No Blogs found"
+                : "Blog search completed successfully",results);
+
     }
 }

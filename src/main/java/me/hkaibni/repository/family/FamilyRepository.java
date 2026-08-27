@@ -71,7 +71,7 @@ public class FamilyRepository
 
             query.append("""
                             AND (lower(nameEn) like :search
-                            or lower(NameAr) like :search)
+                            or lower(nameAr) like :search)
                             """);
             params.put("search",search);
 

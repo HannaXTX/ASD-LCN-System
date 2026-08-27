@@ -6,6 +6,9 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.MediaType;
 import me.hkaibni.dto.request.AttachmentUploadDTO;
+import me.hkaibni.dto.search.AttachmentSearchDTO;
+import me.hkaibni.dto.search.PersonSearchDTO;
+import me.hkaibni.model.family.Person;
 import me.hkaibni.model.media.Attachment;
 import me.hkaibni.repository.media.AttachmentRepository;
 import me.hkaibni.repository.user.UserRepository;
@@ -27,6 +30,13 @@ public class AttachmentService {
     @Inject
     AttachmentRepository attachmentRepository;
 
+    public List<Attachment> searchAttachments(AttachmentSearchDTO request) {
+        return attachmentRepository.search(request);
+    }
+
+    public List<Attachment> searchAttachments(String request, int page, int pageSize) {
+        return attachmentRepository.search(request,page,pageSize);
+    }
 
     public Attachment findById(String id){
         return attachmentRepository.findById(id);
