@@ -151,6 +151,7 @@
             <properties>
                 <quarkus.package.jar.enabled>false</quarkus.package.jar.enabled>
                 <skipITs>false</skipITs>
+                <quarkus.package.jar.type>fast-jar</quarkus.package.jar.type>
                 <quarkus.native.enabled>true</quarkus.native.enabled>
             </properties>
         </profile>
