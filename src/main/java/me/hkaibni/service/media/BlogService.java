@@ -5,6 +5,8 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import me.hkaibni.dto.request.BlogCreationDTO;
+import me.hkaibni.dto.search.AttachmentSearchDTO;
+import me.hkaibni.dto.search.BlogSearchDTO;
 import me.hkaibni.model.media.Attachment;
 import me.hkaibni.model.media.Blog;
 import me.hkaibni.repository.media.AttachmentRepository;
@@ -91,6 +93,13 @@ public class BlogService {
         blogRepository.delete(blog);
     }
 
+    public List<Blog> searchBlogs(BlogSearchDTO request) {
+        return blogRepository.search(request);
+    }
+
+    public List<Blog> searchBlogs(String request, int page, int pageSize) {
+        return blogRepository.search(request,page,pageSize);
+    }
 
     private List<Attachment> getAttachments(List<String> attachmentIds) {
 

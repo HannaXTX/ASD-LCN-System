@@ -6,6 +6,8 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import me.hkaibni.dto.request.IdRequest;
 import me.hkaibni.dto.request.NewsDTO;
+import me.hkaibni.dto.search.BlogSearchDTO;
+import me.hkaibni.dto.search.NewsSearchDTO;
 import me.hkaibni.model.media.Attachment;
 import me.hkaibni.model.media.Blog;
 import me.hkaibni.model.media.News;
@@ -46,6 +48,14 @@ public class NewsService {
         }
 
         return news;
+    }
+
+    public List<News> searchNews(NewsSearchDTO request) {
+        return newsRepository.search(request);
+    }
+
+    public List<News> searchNews(String request, int page, int pageSize) {
+        return newsRepository.search(request,page,pageSize);
     }
 
     @Transactional

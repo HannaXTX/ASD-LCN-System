@@ -1,14 +1,19 @@
 package me.hkaibni.controller.media_related;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import me.hkaibni.dto.request.AttachmentUploadDTO;
+import me.hkaibni.dto.search.AttachmentSearchDTO;
+import me.hkaibni.dto.search.PersonSearchDTO;
+import me.hkaibni.model.family.Person;
 import me.hkaibni.model.media.Attachment;
 import me.hkaibni.repository.media.AttachmentRepository;
 import me.hkaibni.service.media.AttachmentService;
+import me.hkaibni.utils.ResponseUtil;
 
 import java.util.List;
 
@@ -87,5 +92,24 @@ public class AttachmentController {
                 )
                 .header("Content-Length", attachment.getFileData().length)
                 .build();
+    }
+
+    @GET
+    @Path("/search")
+    @RolesAllowed("ADMIN")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchAttachments(AttachmentSearchDTO dto) {
+        List<Attachment> results;
+        if (dto.hasNoCriteria()) {
+            results = attachmentService.searchAttachments(dto.getValue(),dto.getPage(),dto.getPageSize());
+        }
+        else {
+            results = attachmentService.searchAttachments(dto);
+        }
+
+        return ResponseUtil.ok(results.isEmpty()
+                ? "No Attachments found"
+                : "Attachment search completed successfully",results);
+
     }
 }

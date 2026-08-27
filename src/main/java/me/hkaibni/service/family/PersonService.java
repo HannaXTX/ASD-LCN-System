@@ -4,6 +4,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import me.hkaibni.dto.request.PersonDTO;
+import me.hkaibni.dto.search.FamilySearchDTO;
+import me.hkaibni.dto.search.PersonSearchDTO;
+import me.hkaibni.model.family.Family;
 import me.hkaibni.model.family.Person;
 import me.hkaibni.repository.family.PersonRepository;
 
@@ -69,7 +72,13 @@ public class PersonService {
 
         return person;
     }
+    public List<Person> searchPersons(PersonSearchDTO request) {
+        return personRepository.search(request);
+    }
 
+    public List<Person> searchPersons(String request, int page, int pageSize) {
+        return personRepository.search(request,page,pageSize);
+    }
     @Transactional
     public Person updatePerson(Person person, PersonDTO dto) {
 
