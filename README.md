@@ -1,7 +1,7 @@
-# ASD-LCN-System
+# ASD-LCN-System Backend
 
 A modern **Local Community Network System** built with Java and Quarkus, designed to facilitate community engagement and local network connectivity.
-
+Flutter frontend: [Abdullah Al Akhras](https://github.com/abood720x/TrainingProj) 
 ## Overview
 
 The ASD-LCN-System is a robust backend application that provides services for managing local community networks. It leverages modern Java technologies and cloud-native patterns to deliver scalable, performant services.
