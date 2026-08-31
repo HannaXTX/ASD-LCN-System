@@ -1,6 +1,6 @@
 # ASD-LCN-System Backend
 
-Flutter frontend: [Abdullah Al Akhras](https://github.com/abood720x/TrainingProj) 
+Flutter frontend: [Abdullah Al Akhras](https://github.com/abood720x/ScopeProj) 
 
 A modern **Local Community Network System** built with Java and Quarkus, designed to facilitate community engagement and local network connectivity.
 ## Overview
